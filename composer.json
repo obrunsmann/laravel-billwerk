@@ -1,0 +1,10 @@
+{
+    "name": "obrunsmann/laravel-billwerk",
+    "authors": [
+        {
+            "name": "Oliver Brunsmann",
+            "email": "brunsmann@lefamed.de"
+        }
+    ],
+    "require": {}
+}
