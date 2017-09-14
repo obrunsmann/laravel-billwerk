@@ -4,6 +4,7 @@ namespace Lefamed\LaravelBillwerk;
 
 use Illuminate\Database\Eloquent\Model;
 use Lefamed\LaravelBillwerk\Jobs\DoBillwerkSignup;
+use Lefamed\LaravelBillwerk\Models\Customer;
 
 /**
  * Trait Billable
@@ -22,6 +23,11 @@ trait BillableTrait
 		static::created(function (Model $model) {
 			dispatch(new DoBillwerkSignup($model));
 		});
+	}
+
+	public function getCustomer(): Customer
+	{
+		return Customer::where('billable_id', $this->id)->first();
 	}
 
 	/**

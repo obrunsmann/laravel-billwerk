@@ -14,6 +14,7 @@ class Customer extends Model
 	protected $table = 'lefamed_billwerk_customers';
 
 	protected $fillable = [
+		'billable_id',
 		'customer_name',
 		'customer_sub_name',
 		'company_name',
@@ -22,7 +23,13 @@ class Customer extends Model
 		'language',
 		'vat_id',
 		'email_address',
-		'nodes'
+		'nodes',
+
+		'street',
+		'house_number',
+		'postal_code',
+		'city',
+		'country'
 	];
 
 	/**

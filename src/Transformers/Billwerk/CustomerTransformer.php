@@ -14,22 +14,38 @@ class CustomerTransformer extends TransformerAbstract
 	/**
 	 * A Fractal transformer.
 	 *
-	 * @param object $customer
+	 * @param mixed $customer
 	 * @return array
 	 */
-	public function transform(object $customer)
+	public function transform($customer)
 	{
-		return [
-			'id' => $customer->Id,
+		$transformer = [
 			'customer_name' => $customer->CustomerName,
 			'customer_sub_name' => $customer->CustomerSubName,
 			'company_name' => $customer->CompanyName,
 			'first_name' => $customer->FirstName,
 			'last_name' => $customer->LastName,
 			'language' => $customer->Language,
-			'vat_id' => $customer->VatId,
+			'vat_id' => isset($customer->VatId) ? $customer->VatId : '',
 			'email_address' => $customer->EmailAddress,
-			'nodes' => $customer->Notes
+			'notes' => isset($customer->Notes) ? $customer->Notes : '',
+
+			'street' => '',
+			'house_number' => '',
+			'postal_code' => '',
+			'city' => '',
+			'country' => ''
 		];
+
+		//if address is available, add to data
+		if (isset($customer->Address)) {
+			$transformer['street'] = $customer->Address->Street;
+			$transformer['house_number'] = $customer->Address->HouseNumber;
+			$transformer['postal_code'] = $customer->Address->PostalCode;
+			$transformer['city'] = $customer->Address->City;
+			$transformer['country'] = $customer->Address->Country;
+		}
+
+		return $transformer;
 	}
 }
