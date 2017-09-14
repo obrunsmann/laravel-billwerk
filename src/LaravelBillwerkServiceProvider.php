@@ -13,7 +13,7 @@ class LaravelBillwerkServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		$this->loadMigrationsFrom(__DIR__ . 'resources/migrations');
+		$this->loadMigrationsFrom(__DIR__ . '/resources/migrations');
 		$this->publishes([
 			__DIR__ . '/resources/config/laravel-billwerk.php' => config_path('laravel-billwerk.php')
 		]);
