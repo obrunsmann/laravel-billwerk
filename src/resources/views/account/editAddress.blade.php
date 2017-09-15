@@ -44,6 +44,9 @@
 					<fieldset>
 						<legend>Kontakt</legend>
 						{!! form_row($form->email_address) !!}
+						<span class="help-block">
+							Diese E-Mail Adresse dient als buchhalterischer Kontakt und erhält die E-Mail Rechnungen.
+						</span>
 					</fieldset>
 				</div>
 			</div>
