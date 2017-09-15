@@ -12,6 +12,8 @@
 		}
 	},
     "require": {
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "spatie/laravel-fractal": "^5.1",
+        "kris/laravel-form-builder": "^1.12"
     }
 }
