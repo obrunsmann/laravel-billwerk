@@ -19,33 +19,22 @@ class CustomerTransformer extends TransformerAbstract
 	 */
 	public function transform($customer)
 	{
-		$transformer = [
+		return [
 			'customer_name' => $customer->CustomerName,
 			'customer_sub_name' => $customer->CustomerSubName,
 			'company_name' => $customer->CompanyName,
-			'first_name' => $customer->FirstName,
-			'last_name' => $customer->LastName,
+			'first_name' => $customer->FirstName ?? '',
+			'last_name' => $customer->LastName ?? '',
 			'language' => $customer->Language,
-			'vat_id' => isset($customer->VatId) ? $customer->VatId : '',
+			'vat_id' => $customer->VatId ?? '',
 			'email_address' => $customer->EmailAddress,
-			'notes' => isset($customer->Notes) ? $customer->Notes : '',
+			'notes' => $customer->Notes ?? '',
 
-			'street' => '',
-			'house_number' => '',
-			'postal_code' => '',
-			'city' => '',
-			'country' => ''
+			'street' => $customer->Address->Street ?? '',
+			'house_number' => $customer->Address->HouseNumber ?? '',
+			'postal_code' => $customer->Address->PostalCode ?? '',
+			'city' => $customer->Address->City ?? '',
+			'country' => $customer->Address->Country ?? ''
 		];
-
-		//if address is available, add to data
-		if (isset($customer->Address)) {
-			$transformer['street'] = $customer->Address->Street;
-			$transformer['house_number'] = $customer->Address->HouseNumber;
-			$transformer['postal_code'] = $customer->Address->PostalCode;
-			$transformer['city'] = $customer->Address->City;
-			$transformer['country'] = $customer->Address->Country;
-		}
-
-		return $transformer;
 	}
 }
