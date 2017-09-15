@@ -45,7 +45,7 @@ class Customer extends Model
 
 	protected static function boot()
 	{
-		//on create, create billwerk remote customer first
+		// -- On Create Event -- //
 		static::creating(function ($values) {
 			$customerClient = new \Lefamed\LaravelBillwerk\Billwerk\Customer();
 			$data = fractal($values)
@@ -53,6 +53,17 @@ class Customer extends Model
 				->toArray();
 			$res = $customerClient->post($data['data'])->data();
 			$values['billwerk_id'] = $res->Id;
+		});
+
+		// -- On Update Event -- //
+		static::updated(function (Customer $customer) {
+			$customerClient = new \Lefamed\LaravelBillwerk\Billwerk\Customer();
+			$customerClient->put(
+				$customer->billwerk_id,
+				fractal($customer)
+					->transformWith(new CustomerTransformer())
+					->toArray()['data']
+			);
 		});
 	}
 }

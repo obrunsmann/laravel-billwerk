@@ -3,6 +3,9 @@
 namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
+use Lefamed\LaravelBillwerk\Forms\CustomerAddressForm;
+use Lefamed\LaravelBillwerk\Models\Customer;
 
 /**
  * Class AccountController
@@ -11,9 +14,31 @@ use Illuminate\Http\Request;
  */
 class AccountController extends Controller
 {
-	public function index(Request $request)
+	use FormBuilderTrait;
+
+	private function getCustomer(): Customer
 	{
-		$customer = $request->user()->merchant->getCustomer();
+		return \Auth::user()->merchant->getCustomer();
+	}
+
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function index()
+	{
+		$customer = $this->getCustomer();
 		return view('ld-billwerk::account.index', compact('customer'));
+	}
+
+	public function editAddress(Request $request)
+	{
+		$customer = $this->getCustomer();
+		$form = $this->form(CustomerAddressForm::class, [
+			'model' => $customer,
+			'method' => 'PUT',
+			'url' => route('billwerk.customer.update', ['customer' => $customer->id])
+		]);
+
+		return view('ld-billwerk::account.editAddress', compact('form'));
 	}
 }

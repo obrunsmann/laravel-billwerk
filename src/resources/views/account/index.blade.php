@@ -25,7 +25,7 @@
 						</address>
 
 
-						<a href="#" class="btn btn-xs">
+						<a href="{{ route('billwerk.account.edit-address') }}" class="btn btn-xs">
 							<i class="fa fa-pencil"></i>
 							Ändern
 						</a>
