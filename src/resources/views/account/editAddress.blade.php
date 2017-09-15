@@ -54,6 +54,10 @@
 				<i class="fa fa-save fa-fw"></i>
 				Speichern
 			</button>
+			oder
+			<a href="{{ route('billwerk.account') }}">
+				zurück
+			</a>
 			{!! form_end($form) !!}
 		</div>
 	</div>
