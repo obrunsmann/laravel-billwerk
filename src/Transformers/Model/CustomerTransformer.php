@@ -28,7 +28,7 @@ class CustomerTransformer extends TransformerAbstract
 				'HouseNumber' => $customer->house_number,
 				'PostalCode' => $customer->postal_code,
 				'City' => $customer->city,
-				'Country' => $customer->country
+				'Country' => $customer->country ?: 'DE'
 			],
 			'VatId' => $customer->vat_id
 		];
