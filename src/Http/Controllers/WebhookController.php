@@ -30,6 +30,6 @@ class WebhookController extends Controller
 				break;
 		}
 
-		return response(null, 201);
+		return response('', 202);
 	}
 }

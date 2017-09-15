@@ -3,6 +3,7 @@
 namespace Lefamed\LaravelBillwerk\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Lefamed\LaravelBillwerk\Jobs\SyncBillwerkCustomer;
 use Lefamed\LaravelBillwerk\Transformers\Model\CustomerTransformer;
 
 /**
@@ -57,13 +58,7 @@ class Customer extends Model
 
 		// -- On Update Event -- //
 		static::updated(function (Customer $customer) {
-			$customerClient = new \Lefamed\LaravelBillwerk\Billwerk\Customer();
-			$customerClient->put(
-				$customer->billwerk_id,
-				fractal($customer)
-					->transformWith(new CustomerTransformer())
-					->toArray()['data']
-			);
+			dispatch(new SyncBillwerkCustomer($customer));
 		});
 	}
 }

@@ -20,7 +20,17 @@ class CustomerTransformer extends TransformerAbstract
 	{
 		return [
 			'CompanyName' => $customer->company_name,
-			'EmailAddress' => $customer->email_address
+			'EmailAddress' => $customer->email_address,
+			'FirstName' => $customer->first_name,
+			'LastName' => $customer->last_name,
+			'Address' => [
+				'Street' => $customer->street,
+				'HouseNumber' => $customer->house_number,
+				'PostalCode' => $customer->postal_code,
+				'City' => $customer->city,
+				'Country' => $customer->country
+			],
+			'VatId' => $customer->vat_id
 		];
 	}
 }
