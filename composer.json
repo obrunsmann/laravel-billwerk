@@ -6,6 +6,11 @@
             "email": "brunsmann@lefamed.de"
         }
     ],
+	"autoload": {
+		"psr-4": {
+			"Lefamed\\LaravelBillwerk\\": "src"
+		}
+	},
     "require": {
         "guzzlehttp/guzzle": "^6.3"
     }
