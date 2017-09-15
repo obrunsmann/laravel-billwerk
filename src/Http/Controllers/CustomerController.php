@@ -72,9 +72,10 @@ class CustomerController extends Controller
 	{
 		$customer->update($request->all());
 
-		if($request->isJson()) {
+		if ($request->isJson()) {
 			return response()->json($customer);
 		} else {
+			flash(trans('ld-billwerk::customer.update.flash.success'))->success();
 			return redirect()->back();
 		}
 	}
