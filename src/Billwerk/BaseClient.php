@@ -115,11 +115,12 @@ abstract class BaseClient
 
 	/**
 	 * @param $payload
+	 * @param null $resource
 	 * @return ApiResponse
 	 */
-	public function post($payload)
+	public function post($payload, $resource = null)
 	{
-		$route = $this->baseUrl . $this->resource;
+		$route = $this->baseUrl . ($resource ?? $this->resource);
 		$options = $this->buildOptions();
 
 		$options['json'] = $payload;
