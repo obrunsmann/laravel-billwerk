@@ -17,20 +17,14 @@ export default class OrderComponent extends Component {
 
 		this.state = {
 			orderPreview: null,
+			loadingOverlay: false,
 			paymentMethod: 'Debit:FakePSP',
-			submitEnabled: false
+			submitEnabled: true,
+			paymentDetails: {}
 		};
 
 		//init billwerk services
-		this.signupService = new BillwerkJS.Signup();
-		this.paymentService = new BillwerkJS.Payment({
-			publicApiKey: bwPublicKey,
-			providerReturnUrl: ''
-		}, () => {
-			console.log('deine mudda is ready');
-		}, () => {
-			console.error('Deine Mudda hat nen Fehler gefunden');
-		});
+		//this.signupService = new BillwerkJS.Signup();
 
 		//create the cart
 		this.cart = {
@@ -38,12 +32,18 @@ export default class OrderComponent extends Component {
 		};
 
 		//get order preview
-		axios.get('/api/billing/order/preview/' + planVariantId)
+		axios.post('/api/billing/order/preview', {
+			planVariantId
+		})
 			.then((res) => {
 				this.setState({
 					orderPreview: res.data
 				});
 			});
+
+		//bind context to our event handlers
+		this.updatePaymentDetails = this.updatePaymentDetails.bind(this);
+		this.commitOrder = this.commitOrder.bind(this);
 	}
 
 	getProduct() {
@@ -64,15 +64,72 @@ export default class OrderComponent extends Component {
 		return this.state.orderPreview.Currency;
 	}
 
-	formatDate(date) {
+	static formatDate(date) {
 		return moment(date).format('LL');
+	}
+
+	scrollToTop(scrollDuration) {
+		let scrollStep = -window.scrollY / (scrollDuration / 15),
+			scrollInterval = setInterval(function () {
+				if (window.scrollY !== 0) {
+					window.scrollBy(0, scrollStep);
+				}
+				else clearInterval(scrollInterval);
+			}, 15);
+	}
+
+	/**
+	 * Upate the stored payment details in the current state. Used for props on payment method components.
+	 *
+	 * @param details
+	 */
+	updatePaymentDetails(details) {
+		this.setState({paymentDetails: details});
+	}
+
+	commitOrder() {
+		//show loading spinner
+		this.setState({loadingOverlay: true});
+
+		//document.body.scrollTop = 0;
+		this.scrollToTop(2000);
+
+		//create order for the current customer
+		axios.post('/api/billing/order', {
+			planVariantId: planVariantId
+		})
+			.then((res) => {
+				//create the payment service
+				let paymentService = new BillwerkJS.Payment({
+					publicApiKey: bwPublicKey
+				}, () => {
+					//payment service is ready, continue with the payment process
+					this.signupService.paySignupInteractive(
+						paymentService,
+						this.state.paymentDetails,
+						{
+							OrderId: res.data.Id,
+							GrossTotal: res.data.TotalGross,
+							Currency: res.data.Currency
+						},
+						() => {
+							console.log('success');
+						},
+						(err) => {
+							console.error(err);
+						}
+					);
+				}, () => {
+					console.error('Error on creating payment service');
+				});
+			});
 	}
 
 	render() {
 		return (
 			<div>
 				{(() => {
-					if (this.state.orderPreview) {
+					if (this.state.orderPreview && !this.state.loadingOverlay) {
 						return (
 							<div>
 								<div className="content-block">
@@ -111,7 +168,7 @@ export default class OrderComponent extends Component {
 											Nach Abschluss des Vertrages fallen wiederkehrende Gebühren an!
 											Die nächste Gebühr in Höhe
 											von {this.state.orderPreview.NextTotalGross} {this.getCurrency()} wird
-											fällig am {this.formatDate(this.state.orderPreview.NextTotalGrossDate)}.
+											fällig am {OrderComponent.formatDate(this.state.orderPreview.NextTotalGrossDate)}.
 										</p>
 									</fieldset>
 								</div>
@@ -121,10 +178,10 @@ export default class OrderComponent extends Component {
 										<legend>Zahlungsweise</legend>
 
 										<div className="row payment-methods">
-											<div className="col-md-6">
+											<div className="col-sm-6">
 												<label>
 													<input type="radio" name="payment-method"
-														   onClick={() => this.setState({paymentMethod: 'Debit:FakePSP'})}
+														   onChange={() => this.setState({paymentMethod: 'Debit:FakePSP'})}
 														   checked={this.state.paymentMethod === 'Debit:FakePSP'}/>
 
 													<ul className="list-inline text-center payment-methods-o">
@@ -132,10 +189,10 @@ export default class OrderComponent extends Component {
 													</ul>
 												</label>
 											</div>
-											<div className="col-md-6">
+											<div className="col-sm-6">
 												<label>
 													<input type="radio" name="payment-method"
-														   onClick={() => this.setState({paymentMethod: 'CreditCard:FakePSP'})}
+														   onChange={() => this.setState({paymentMethod: 'CreditCard:FakePSP'})}
 														   checked={this.state.paymentMethod === 'CreditCard:FakePSP'}/>
 
 													<ul className="list-inline text-center payment-methods-o">
@@ -151,9 +208,9 @@ export default class OrderComponent extends Component {
 										{(() => {
 											switch (this.state.paymentMethod) {
 												case 'Debit:FakePSP':
-													return <SepaDebitComponent/>
+													return <SepaDebitComponent onChange={this.updatePaymentDetails}/>
 												case 'CreditCard:FakePSP':
-													return <CreditCardComponent/>
+													return <CreditCardComponent onChange={this.updatePaymentDetails}/>
 											}
 										})()}
 									</fieldset>
@@ -172,7 +229,8 @@ export default class OrderComponent extends Component {
 											</label>
 										</div>
 
-										<button type="submit" className="btn btn-primary" disabled={!this.state.submitEnabled} style={{marginTop: 20}}>
+										<button type="submit" className="btn btn-primary" onClick={this.commitOrder}
+												disabled={!this.state.submitEnabled} style={{marginTop: 20}}>
 											Jetzt zahlungspflichtig bestellen
 										</button>
 									</fieldset>
@@ -196,17 +254,6 @@ export default class OrderComponent extends Component {
 	}
 }
 
-if (document
-
-		.getElementById(
-			'order'
-		)) {
-	ReactDOM
-		.render(
-			<OrderComponent/>,
-			document
-				.getElementById(
-					'order'
-				))
-	;
+if(document.getElementById('order')) {
+	ReactDOM.render(<OrderComponent/>, document.getElementById('order'));
 }

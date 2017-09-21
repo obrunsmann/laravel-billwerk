@@ -19,4 +19,19 @@ class Order extends BaseClient
 			]
 		], $this->resource . '/Preview');
 	}
+
+	/**
+	 * @param $customerId
+	 * @param $planVariantId
+	 * @return ApiResponse
+	 */
+	public function orderForExistingCustomer($customerId, $planVariantId)
+	{
+		return $this->post([
+			'CustomerId' => $customerId,
+			'Cart' => [
+				'PlanVariantId' => $planVariantId
+			]
+		]);
+	}
 }

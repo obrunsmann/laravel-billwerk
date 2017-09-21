@@ -13,16 +13,46 @@ use Lefamed\LaravelBillwerk\Http\Controllers\Controller;
 class OrderController extends Controller
 {
 	/**
-	 * @param $planVariantId
 	 * @param Request $request
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public function preview($planVariantId, Request $request)
+	public function preview(Request $request)
 	{
+		//only allow json requests
+		abort_if(!$request->isJson(), 406);
+
+		$payload = json_decode($request->getContent());
+		abort_if(!$request->planVariantId, 400);
+
+		$planVariantId = $payload->planVariantId;
+
 		//create the billwerk order
 		$orderClient = new Order();
 		$res = $orderClient->preview($request->user()->merchant->getCustomer()->billwerk_id, $planVariantId);
 
 		return response()->json($res->data()->Order);
+	}
+
+	/**
+	 * Place order in REST Api
+	 *
+	 * @param Request $request
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function order(Request $request)
+	{
+		//only allow json requests
+		abort_if(!$request->isJson(), 406);
+
+		//find out the plan variant id
+		$payload = json_decode($request->getContent());
+		abort_if(!$request->planVariantId, 400);
+
+		$planVariantId = $payload->planVariantId;
+
+		$orderClient = new Order();
+		$res = $orderClient->orderForExistingCustomer($request->user()->merchant->getCustomer()->billwerk_id, $planVariantId);
+
+		return response()->json($res->data());
 	}
 }

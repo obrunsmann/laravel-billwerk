@@ -13,6 +13,7 @@ Route::get('/order/{planVariantId}', 'OrderController@index')
 
 // -- API Routes within web middleware -- //
 Route::group(['prefix' => '/api/billing', 'namespace' => 'Api'], function () {
-	Route::get('/order/preview/{planVariantId}', 'OrderController@preview');
+	Route::post('/order/preview', 'OrderController@preview');
+	Route::post('/order', 'OrderController@order');
 });
 
