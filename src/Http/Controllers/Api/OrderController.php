@@ -25,10 +25,11 @@ class OrderController extends Controller
 		abort_if(!$request->planVariantId, 400);
 
 		$planVariantId = $payload->planVariantId;
+		$couponCode = $payload->couponCode ?? null;
 
 		//create the billwerk order
 		$orderClient = new Order();
-		$res = $orderClient->preview($request->user()->merchant->getCustomer()->billwerk_id, $planVariantId);
+		$res = $orderClient->preview($request->user()->merchant->getCustomer()->billwerk_id, $planVariantId, $couponCode);
 
 		return response()->json($res->data()->Order);
 	}

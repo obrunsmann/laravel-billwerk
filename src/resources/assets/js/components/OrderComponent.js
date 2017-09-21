@@ -23,7 +23,9 @@ export default class OrderComponent extends Component {
 			paymentDetails: {},
 			paymentDetailsValid: false,
 			paymentError: null,
-			paymentSuccess: false
+			paymentSuccess: false,
+			couponCode: '',
+			applyCouponButtonDisabled: false
 		};
 
 		//init billwerk services
@@ -49,6 +51,7 @@ export default class OrderComponent extends Component {
 		this.commitOrder = this.commitOrder.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleCheckboxInput = this.handleCheckboxInput.bind(this);
+		this.applyCouponCode = this.applyCouponCode.bind(this);
 	}
 
 	handleInputChange(e) {
@@ -101,7 +104,6 @@ export default class OrderComponent extends Component {
 	 * @param details
 	 */
 	updatePaymentDetails(details, valid) {
-		console.log(details, valid);
 		this.setState({
 			paymentDetails: details,
 			paymentDetailsValid: valid
@@ -150,6 +152,25 @@ export default class OrderComponent extends Component {
 					);
 				}, () => {
 					console.error('Error on creating payment service');
+				});
+			});
+	}
+
+	applyCouponCode(e) {
+		this.setState({
+			applyCouponButtonDisabled: true
+		});
+
+		//load new order preview with coupon code
+		axios.post('/api/billing/order/preview', {
+			planVariantId,
+			couponCode: this.state.couponCode
+		})
+			.then((res) => {
+				console.log(res.data);
+				this.setState({
+					orderPreview: res.data,
+					applyCouponButtonDisabled: false
 				});
 			});
 	}
@@ -243,10 +264,15 @@ export default class OrderComponent extends Component {
 											</thead>
 											<tbody>
 											{(() => {
-												return _.map(this.state.orderPreview.RecurringFee.LineItems, (line) => {
+												return _.map(this.state.orderPreview.RecurringFee.LineItems, (line, index) => {
 													return (
-														<tr key={line.ProductId}>
-															<th>{line.Description}</th>
+														<tr key={index}>
+															<th>
+																{line.Description}
+																<br/>
+																{moment(line.PeriodStart).format('ll')}
+																- {moment(line.PeriodEnd).format('ll')}
+															</th>
 															<td>{line.PricePerUnit} {this.getCurrency()}
 																/ {this.getFeePeriod()}</td>
 															<td>{line.TotalNet} {this.getCurrency()}</td>
@@ -257,6 +283,21 @@ export default class OrderComponent extends Component {
 												});
 											})()}
 											</tbody>
+											{(() => {
+												if (this.state.orderPreview.RecurringFee.LineItems.length > 1) {
+													return (
+														<tfoot>
+														<tr style={{borderTop: '3px solid black', background: '#f1f1f1'}}>
+															<th>Gesamt</th>
+															<td colSpan={1}></td>
+															<td>{this.state.orderPreview.Total} {this.getCurrency()}</td>
+															<td>{this.state.orderPreview.TotalVat} {this.getCurrency()}</td>
+															<td>{this.state.orderPreview.TotalGross} {this.getCurrency()}</td>
+														</tr>
+														</tfoot>
+													)
+												}
+											})()}
 										</table>
 
 										<p>
@@ -267,6 +308,26 @@ export default class OrderComponent extends Component {
 											fällig
 											am {OrderComponent.formatDate(this.state.orderPreview.NextTotalGrossDate)}.
 										</p>
+
+										<hr/>
+
+										<form className="form-inline">
+											<div className="row">
+												<div className="form-group col-sm-9">
+													<input type="text" className="form-control" name="couponCode"
+														   placeholder="Coupon-Code" style={{width: '100%'}}
+														   onBlur={this.handleInputChange}/>
+												</div>
+												<div className="col-sm-3">
+													<button type="submit" className="btn btn-success btn-block"
+															onClick={this.applyCouponCode}
+															disabled={this.state.applyCouponButtonDisabled}>
+														<i className="fa fa-check fa-fw"/>
+														Gutschein anwenden
+													</button>
+												</div>
+											</div>
+										</form>
 									</fieldset>
 								</div>
 

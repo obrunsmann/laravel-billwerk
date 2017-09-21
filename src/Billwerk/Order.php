@@ -10,12 +10,13 @@ class Order extends BaseClient
 {
 	protected $resource = 'Orders';
 
-	public function preview($customerId, $planVariantId)
+	public function preview($customerId, $planVariantId, $couponCode = null)
 	{
 		return $this->post([
 			'CustomerId' => $customerId,
 			'Cart' => [
-				'PlanVariantId' => $planVariantId
+				'PlanVariantId' => $planVariantId,
+				'CouponCode' => $couponCode
 			]
 		], $this->resource . '/Preview');
 	}
