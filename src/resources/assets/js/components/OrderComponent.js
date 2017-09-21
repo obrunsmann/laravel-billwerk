@@ -20,11 +20,13 @@ export default class OrderComponent extends Component {
 			loadingOverlay: false,
 			paymentMethod: 'Debit:FakePSP',
 			submitEnabled: true,
-			paymentDetails: {}
+			paymentDetails: {},
+			paymentError: null,
+			paymentSuccess: false
 		};
 
 		//init billwerk services
-		//this.signupService = new BillwerkJS.Signup();
+		this.signupService = new BillwerkJS.Signup();
 
 		//create the cart
 		this.cart = {
@@ -100,7 +102,7 @@ export default class OrderComponent extends Component {
 		})
 			.then((res) => {
 				//create the payment service
-				let paymentService = new BillwerkJS.Payment({
+				let paymentService = new BillwerkPaymentService({
 					publicApiKey: bwPublicKey
 				}, () => {
 					//payment service is ready, continue with the payment process
@@ -112,11 +114,21 @@ export default class OrderComponent extends Component {
 							GrossTotal: res.data.TotalGross,
 							Currency: res.data.Currency
 						},
-						() => {
-							console.log('success');
+						(res) => {
+							// -- order successfull -- //
+							console.log(res);
+							this.setState({
+								paymentSuccess: true
+							});
 						},
 						(err) => {
+							// -- order failed -- //
+							//error occured while executing payment
 							console.error(err);
+							this.setState({
+								paymentError: _.head(err.errorCode),
+								loadingOverlay: false
+							});
 						}
 					);
 				}, () => {
@@ -125,13 +137,76 @@ export default class OrderComponent extends Component {
 			});
 	}
 
+	getPaymentErrorMessage(errorCode) {
+		let messages = {
+			'UnmappedError': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
+			'Unknown': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
+			'InvalidBic': 'BIC ungültig!',
+			'IteroServerError': 'Serverfehler, bitte versuchen Sie es in einem Augenblick erneut!',
+			'PspServerError': 'Die Zahlung konnte nicht zum Zahlungsanbieter weitergeleitet werden. Bitte versuchen Sie es später erneut!',
+			'Timeout': 'Zeitüberschreitung bei der Verbindung. Bitte versuchen Sie es später erneut.',
+			'InvalidKey': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InvalidConfiguration': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InvalidPaymentData': 'Eingegebene Zahlungsweise ist nicht gültig. Bitte kontrollieren Sie Ihre Eingabe!',
+			'InvalidData': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'Aborted': 'Zahlung wurde abgebrochen.',
+			'AcquirerServerError': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'AuthorizationRejected': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'RateLimit': 'Zu häufige Anfragen. Bitte versuchen Sie es später erneut.',
+			'InvalidTransaction': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'AmountLimitExceeeded': 'Die Zahlung wurde wegen mangelnder Deckung abgewiesen. Bitte nutze eine andere Zahlungsweise.',
+			'InvalidPaymentMethod': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InvalidCardType': 'Die eingegebene Kreditkarte wird von uns leider nicht unterstützt. Bitte wähle eine andere Zahlungsweise.',
+			'InvalidCardNumber': 'Die eingegebene Kreditkartennummer ist nicht gültig.',
+			'InvalidExpirationDate': 'Ablaufdatum ist ungültig.',
+			'InvalidCardCvc': 'CVC (Sicherheitscode) ist ungültig. Bitte kontrollieren Sie Ihre Eingabe und versuchen Sie es erneut.',
+			'InvalidCardHolder': 'Bitte kontrollieren Sie den Karteninhaber. Die Eingabe war nicht gültig.',
+			'3DsProblem': '3D-Secure ist fehlgeschlagen. Bitte versuchen Sie es erneut oder wähle eine andere Zahlungsweise.',
+			'InvalidAmount': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InvalidCurrency': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InvalidAccountNumber': 'Fehlerhafte Kontonummer, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
+			'InvalidAccountHolder': 'Fehlerhafter Kontoinhaber, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
+			'InvalidBankCode': 'Fehlerhafte Bankleitzahl, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
+			'InvalidIban': 'Fehlerhafte IBAN, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
+			'InvalidCountry': 'Fehlerhaftes Land, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
+			'BearerRejected': 'Die Zahlungsweise wurde abgelehnt. Details wurden uns aus Datenschutzgründen nicht übermittelt. Bitte versuchen Sie es erneut mit einer alternativen Zahlungsart!',
+			'BearerExpired': 'Die Zahlungsweise ist abgelaufen. Bitte nutze eine alternative Zahlungsweise.',
+			'InvalidCouponCode': 'Der Gutscheincode ist nicht gültig, bitte prüfen Sie Ihre Eingabe und versuchen Sie es erneut!',
+
+			'LimitExceeded': 'Limit überschritten. Bitte nutze eine alternative Zahlungsweise.',
+			'BearerInvalid': 'Die Zahlungsweise wurde abgelehnt. Details wurden uns aus Datenschutzgründen nicht übermittelt. Bitte versuchen Sie es erneut mit einer alternativen Zahlungsart!',
+			'LoginError': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InsufficientBalance': 'Der Kontostand reicht leider nicht aus. Bitte versuchen Sie es später erneut.',
+			'AlreadyExecuted': 'Die Zahlung wurde bereits abgesendet.',
+			'InvalidPreconditions': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'InternalError': 'Interner Fehler. .',
+			'InternalProviderError': 'Unbekannter Fehler.',
+			'PermissionDenied': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
+			'Canceled': 'Zahlung abgebrochen.',
+			'Rejected': 'Zahlung zurückgewiesen.'
+		};
+
+		return messages[errorCode] || messages['Unknown'];
+	}
+
 	render() {
 		return (
 			<div>
 				{(() => {
-					if (this.state.orderPreview && !this.state.loadingOverlay) {
+					if (this.state.orderPreview && !this.state.loadingOverlay && !this.state.paymentSuccess) {
 						return (
 							<div>
+
+								{(() => {
+									if (this.state.paymentError) {
+										return (
+											<p className="alert alert-warning" style={{marginTop: 20}}>
+												{this.getPaymentErrorMessage(this.state.paymentError)}
+											</p>
+										)
+									}
+								})()}
+
 								<div className="content-block">
 									<fieldset>
 										<legend>Übersicht</legend>
@@ -168,7 +243,8 @@ export default class OrderComponent extends Component {
 											Nach Abschluss des Vertrages fallen wiederkehrende Gebühren an!
 											Die nächste Gebühr in Höhe
 											von {this.state.orderPreview.NextTotalGross} {this.getCurrency()} wird
-											fällig am {OrderComponent.formatDate(this.state.orderPreview.NextTotalGrossDate)}.
+											fällig
+											am {OrderComponent.formatDate(this.state.orderPreview.NextTotalGrossDate)}.
 										</p>
 									</fieldset>
 								</div>
@@ -237,6 +313,19 @@ export default class OrderComponent extends Component {
 								</div>
 							</div>
 						)
+					} else if (this.state.paymentSuccess === true) {
+						return (
+							<div className="content-block">
+								<i className="fa fa-check-circle fa-4x pull-left text-success"></i>
+								<p>
+									<strong>Vielen Dank für Ihre Bestellung!</strong>
+								</p>
+								<p>
+									Der Freischaltungsprozess kann einige Minuten dauern, Sie erhalten anschließend eine
+									E-Mail!
+								</p>
+							</div>
+						)
 					} else {
 						return (
 							<div className="content-block">
@@ -254,6 +343,6 @@ export default class OrderComponent extends Component {
 	}
 }
 
-if(document.getElementById('order')) {
+if (document.getElementById('order')) {
 	ReactDOM.render(<OrderComponent/>, document.getElementById('order'));
 }

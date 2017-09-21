@@ -5,12 +5,14 @@
 @endpush
 
 @push('scripts')
+	<script type="text/javascript" src="https://sandbox.billwerk.com/selfService/billwerkJS"></script>
+
 	<script type="text/javascript">
+		const BillwerkPaymentService = BillwerkJS.Payment;
 		var bwPublicKey = '{{ config('laravel-billwerk.auth.public_key') }}';
 		var planVariantId = '{{ $planVariantId }}';
 	</script>
 
-	<script type="text/javascript" src="https://sandbox.billwerk.com/selfService/billwerkJS"></script>
 	<script src="{{ mix('js/order.js') }}" type="text/javascript"></script>
 @endpush
 
