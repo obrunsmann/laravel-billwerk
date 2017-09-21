@@ -19,8 +19,9 @@ export default class OrderComponent extends Component {
 			orderPreview: null,
 			loadingOverlay: false,
 			paymentMethod: 'Debit:FakePSP',
-			submitEnabled: true,
+			termsAccepted: false,
 			paymentDetails: {},
+			paymentDetailsValid: false,
 			paymentError: null,
 			paymentSuccess: false
 		};
@@ -46,6 +47,20 @@ export default class OrderComponent extends Component {
 		//bind context to our event handlers
 		this.updatePaymentDetails = this.updatePaymentDetails.bind(this);
 		this.commitOrder = this.commitOrder.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleCheckboxInput = this.handleCheckboxInput.bind(this);
+	}
+
+	handleInputChange(e) {
+		this.setState({
+			[e.target.name]: e.target.value
+		});
+	}
+
+	handleCheckboxInput(e) {
+		this.setState({
+			[e.target.name]: e.target.checked
+		});
 	}
 
 	getProduct() {
@@ -85,8 +100,12 @@ export default class OrderComponent extends Component {
 	 *
 	 * @param details
 	 */
-	updatePaymentDetails(details) {
-		this.setState({paymentDetails: details});
+	updatePaymentDetails(details, valid) {
+		console.log(details, valid);
+		this.setState({
+			paymentDetails: details,
+			paymentDetailsValid: valid
+		});
 	}
 
 	commitOrder() {
@@ -116,7 +135,6 @@ export default class OrderComponent extends Component {
 						},
 						(res) => {
 							// -- order successfull -- //
-							console.log(res);
 							this.setState({
 								paymentSuccess: true
 							});
@@ -124,7 +142,6 @@ export default class OrderComponent extends Component {
 						(err) => {
 							// -- order failed -- //
 							//error occured while executing payment
-							console.error(err);
 							this.setState({
 								paymentError: _.head(err.errorCode),
 								loadingOverlay: false
@@ -137,7 +154,7 @@ export default class OrderComponent extends Component {
 			});
 	}
 
-	getPaymentErrorMessage(errorCode) {
+	static getPaymentErrorMessage(errorCode) {
 		let messages = {
 			'UnmappedError': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
 			'Unknown': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
@@ -187,6 +204,10 @@ export default class OrderComponent extends Component {
 		};
 
 		return messages[errorCode] || messages['Unknown'];
+	}
+
+	isOrderValid() {
+		return this.state.paymentDetailsValid && this.state.termsAccepted;
 	}
 
 	render() {
@@ -299,14 +320,17 @@ export default class OrderComponent extends Component {
 
 										<div className="checkbox>">
 											<label>
-												<input type="checkbox"/>&nbsp;
+												<input type="checkbox" name="termsAccepted"
+													   checked={this.state.termsAccepted}
+													   onChange={this.handleCheckboxInput}/>&nbsp;
 												Ich habe die <a href="">Geschäftsbedinungen</a> gelesen und akzeptiere
 												diese.
 											</label>
 										</div>
 
 										<button type="submit" className="btn btn-primary" onClick={this.commitOrder}
-												disabled={!this.state.submitEnabled} style={{marginTop: 20}}>
+												disabled={!this.state.paymentDetailsValid || !this.state.termsAccepted}
+												style={{marginTop: 20}}>
 											Jetzt zahlungspflichtig bestellen
 										</button>
 									</fieldset>

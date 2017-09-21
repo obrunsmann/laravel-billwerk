@@ -8,11 +8,20 @@ export default class SepaDebitComponent extends Component {
 			bearer: 'Debit:FakePSP',
 			iban: '',
 			bic: '',
-			accountHolder: ''
+			accountHolder: '',
+			acceptMandate: false
 		};
 
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleInputChangeRaw = this.handleInputChangeRaw.bind(this);
+		this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+	}
+
+	isFormValid() {
+		return this.state.iban !== '' &&
+			this.state.bic !== '' &&
+			this.state.accountHolder !== '' &&
+			this.state.acceptMandate === true;
 	}
 
 	handleInputChange(e) {
@@ -32,7 +41,15 @@ export default class SepaDebitComponent extends Component {
 		this.setState({
 			[e.target.name]: _.trim(e.target.value)
 		}, () => {
-			this.props.onChange(this.state);
+			this.props.onChange(this.state, this.isFormValid());
+		});
+	}
+
+	handleCheckboxChange(e) {
+		this.setState({
+			[e.target.name]: e.target.checked
+		}, () => {
+			this.props.onChange(this.state, this.isFormValid());
 		});
 	}
 
@@ -61,7 +78,9 @@ export default class SepaDebitComponent extends Component {
 
 				<div className="checkbox>">
 					<label>
-						<input type="checkbox"/> <strong>Ich stimme dem SEPA Lastschrift-Mandat zu:</strong>
+						<input type="checkbox" name="acceptMandate" onChange={this.handleCheckboxChange}
+							   checked={this.state.acceptMandate}/>
+						<strong>Ich stimme dem SEPA Lastschrift-Mandat zu:</strong>
 					</label>
 
 					<p className="text-muted small text-justify">

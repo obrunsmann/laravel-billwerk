@@ -20,6 +20,14 @@ export default class CreditCartComponent extends Component {
 		this.handleInputChangeRaw = this.handleInputChangeRaw.bind(this);
 	}
 
+	isFormValid() {
+		return this.state.cardNumber !== '' &&
+			this.state.expiryMonth !== '' &&
+			this.state.expiryYear !== '' &&
+			this.state.cardHolder !== '' &&
+			this.state.cvc !== '';
+	}
+
 	handleInputChange(e) {
 		if (e.target.name === 'expiry') {
 			//handle expiry date  (we need to split string into year + month for our state)
@@ -33,14 +41,14 @@ export default class CreditCartComponent extends Component {
 			}
 
 			this.setState(expiry, () => {
-				this.props.onChange(this.state);
+				this.props.onChange(this.state, this.isFormValid());
 			});
 		} else {
 			//handle all other form inputs
 			this.setState({
 				[e.target.name]: _.trim(e.target.value).split(' ').join('')
 			}, () => {
-				this.props.onChange(this.state);
+				this.props.onChange(this.state, this.isFormValid());
 			});
 		}
 	}
@@ -54,7 +62,7 @@ export default class CreditCartComponent extends Component {
 		this.setState({
 			[e.target.name]: _.trim(e.target.value)
 		}, () => {
-			this.props.onChange(this.state);
+			this.props.onChange(this.state, this.isFormValid());
 		});
 	}
 
