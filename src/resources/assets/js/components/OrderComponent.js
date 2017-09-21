@@ -321,7 +321,7 @@ export default class OrderComponent extends Component {
 									<strong>Vielen Dank für Ihre Bestellung!</strong>
 								</p>
 								<p>
-									Der Freischaltungsprozess kann einige Minuten dauern, Sie erhalten anschließend eine
+									Der Freischaltungsprozess dauert nur wenige Minuten, Sie erhalten anschließend eine
 									E-Mail!
 								</p>
 							</div>
