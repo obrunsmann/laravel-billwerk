@@ -8,6 +8,9 @@ moment.locale('de');
 
 import SepaDebit from './Portal/PaymentMethods/SepaDebit';
 
+import SepaDebitComponent from './Order/SepaDebitComponent';
+import CreditCardComponent from './Order/CreditCardComponent';
+
 import 'paymentfont/css/paymentfont.css';
 
 export default class ContractComponent extends Component {
@@ -17,10 +20,19 @@ export default class ContractComponent extends Component {
 
 		this.state = {
 			loading: true,
-			contract: {}
+			contract: {},
+
+			changePaymentDetails: false,
+			paymentDetailsValid: false,
+			paymentDetails: {}
 		};
 
+		//bind context to event handlers
 		this.doCancellation = this.doCancellation.bind(this);
+		this.changePaymentDetails = this.changePaymentDetails.bind(this);
+		this.cancelChangePaymentDetails = this.cancelChangePaymentDetails.bind(this);
+		this.updatePaymentDetails = this.updatePaymentDetails.bind(this);
+		this.applyNewPaymentDetails = this.applyNewPaymentDetails.bind(this);
 	}
 
 	componentWillMount() {
@@ -63,6 +75,18 @@ export default class ContractComponent extends Component {
 		}
 	}
 
+	/**
+	 * Upate the stored payment details in the current state. Used for props on payment method components.
+	 *
+	 * @param details
+	 */
+	updatePaymentDetails(details, valid) {
+		this.setState({
+			paymentDetails: details,
+			paymentDetailsValid: valid
+		});
+	}
+
 	doCancellation() {
 		let res = confirm('Paket zum ' + moment(this.state.contract.EndDateIfCancelledNow).format('LL') + ' kündigen?');
 		if (res) {
@@ -74,6 +98,38 @@ export default class ContractComponent extends Component {
 				console.error(err);
 			});
 		}
+	}
+
+	changePaymentDetails() {
+		this.setState({changePaymentDetails: true});
+	}
+
+	cancelChangePaymentDetails() {
+		this.setState({changePaymentDetails: false});
+	}
+
+	applyNewPaymentDetails() {
+		//show loading indicator
+		this.setState({loading: true, changePaymentDetails: false});
+
+		//update the payment details
+		let paymentService = new BillwerkPaymentService({
+			publicApiKey: bwPublicKey
+		}, () => {
+			console.log(paymentService, this.state.paymentDetails);
+			this.portalService.paymentChange(
+				paymentService,
+				this.state.paymentDetails,
+				(res) => {
+					this.refreshContract();
+				},
+				(err) => {
+					console.error(err);
+				}
+			);
+		}, () => {
+			console.error('Error on creating payment service');
+		});
 	}
 
 	render() {
@@ -98,7 +154,74 @@ export default class ContractComponent extends Component {
 
 								<SepaDebit payment={this.getContract().PaymentBearer}/>
 
+								{(() => {
+									if (!this.state.changePaymentDetails) {
+										return <a href={void(0)} onClick={this.changePaymentDetails}><i
+											className="fa fa-pencil"/>
+											Ändern</a>;
+									}
+								})()}
 							</fieldset>
+
+							{(() => {
+								if (this.state.changePaymentDetails) {
+									return (
+										<fieldset>
+											<legend>Zahlungsweise ändern</legend>
+
+											<p>Bitte wählen Sie Ihre gewünschte Zahlungsart aus:</p>
+
+											<div className="row payment-methods">
+												<div className="col-sm-6">
+													<label>
+														<input type="radio" name="payment-method"
+															   onChange={() => this.setState({paymentMethod: 'Debit:FakePSP'})}
+															   checked={this.state.paymentMethod === 'Debit:FakePSP'}/>
+
+														<ul className="list-inline text-center payment-methods-o">
+															<li><i className="pf pf-sepa"></i></li>
+														</ul>
+													</label>
+												</div>
+												<div className="col-sm-6">
+													<label>
+														<input type="radio" name="payment-method"
+															   onChange={() => this.setState({paymentMethod: 'CreditCard:FakePSP'})}
+															   checked={this.state.paymentMethod === 'CreditCard:FakePSP'}/>
+
+														<ul className="list-inline text-center payment-methods-o">
+															<li><i className="pf pf-visa"></i></li>
+															<li><i className="pf pf-mastercard"></i></li>
+														</ul>
+													</label>
+												</div>
+											</div>
+
+											<hr/>
+
+											{(() => {
+												switch (this.state.paymentMethod) {
+													case 'Debit:FakePSP':
+														return <SepaDebitComponent
+															onChange={this.updatePaymentDetails}/>
+													case 'CreditCard:FakePSP':
+														return <CreditCardComponent
+															onChange={this.updatePaymentDetails}/>
+												}
+											})()}
+
+											<button className="btn btn-success btn-sm"
+													disabled={!this.state.paymentDetailsValid}
+													onClick={this.applyNewPaymentDetails}>
+												<i className="fa fa-save fa-fw"/>
+												Neue Zahlungsart speichern
+											</button>
+											oder <a href={void(0)}
+													onClick={this.cancelChangePaymentDetails}>Abbrechen</a>
+										</fieldset>
+									)
+								}
+							})()}
 						</div>
 					</div>
 					<div className="col-md-6">

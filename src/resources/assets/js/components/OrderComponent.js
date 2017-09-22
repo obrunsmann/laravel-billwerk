@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import 'moment/locale/de';
 import 'paymentfont/css/paymentfont.css';
 
-import CreditCardComponent from './Order/CredtCardComponent';
+import CreditCardComponent from './Order/CreditCardComponent';
 import SepaDebitComponent from './Order/SepaDebitComponent';
 
 moment.locale('de');

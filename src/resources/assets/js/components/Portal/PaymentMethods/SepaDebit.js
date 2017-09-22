@@ -38,8 +38,6 @@ export default class SepaDebit extends Component {
 					</tr>
 					</tbody>
 				</table>
-
-				<a href="#"><i className="fa fa-pencil"/> Ändern</a>
 			</div>
 		)
 	}
