@@ -99,12 +99,13 @@ abstract class BaseClient
 
 	/**
 	 * @param null $id Resource ID
+	 * @param null $action
 	 * @return ApiResponse
 	 */
-	public function get($id = null)
+	public function get($id = null, $action = null)
 	{
 		if (null !== $id) {
-			$route = $this->baseUrl . $this->resource . '/' . $id;
+			$route = $this->baseUrl . $this->resource . '/' . $id . ($action !== null ? '/' . $action : '');
 		} else {
 			$route = $this->baseUrl . $this->resource;
 		}

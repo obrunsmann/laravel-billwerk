@@ -15,5 +15,7 @@ Route::get('/order/{planVariantId}', 'OrderController@index')
 Route::group(['prefix' => '/api/billing', 'namespace' => 'Api'], function () {
 	Route::post('/order/preview', 'OrderController@preview');
 	Route::post('/order', 'OrderController@order');
+
+	Route::get('/contract/{contractId}/token', 'ContractController@getSelfServiceToken');
 });
 
