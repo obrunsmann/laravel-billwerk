@@ -2,6 +2,7 @@
 
 namespace Lefamed\LaravelBillwerk\Jobs\Webhooks;
 
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -34,12 +35,16 @@ class CustomerChanged implements ShouldQueue
 	{
 		$customerClient = new Customer();
 
-		//fetch remote customer data
-		$res = $customerClient->get($this->customerId);
-		$data = fractal($res->data())
-			->transformWith(new CustomerTransformer())
-			->toArray()['data'];
+		try {
+			//fetch remote customer data
+			$res = $customerClient->get($this->customerId);
+			$data = fractal($res->data())
+				->transformWith(new CustomerTransformer())
+				->toArray()['data'];
 
-		\Lefamed\LaravelBillwerk\Models\Customer::where('billwerk_id', $this->customerId)->update($data);
+			\Lefamed\LaravelBillwerk\Models\Customer::where('billwerk_id', $this->customerId)->update($data);
+		} catch (\Exception $e) {
+			Bugsnag::notifyException($e);
+		}
 	}
 }
