@@ -33,6 +33,7 @@ export default class ContractComponent extends Component {
 		this.cancelChangePaymentDetails = this.cancelChangePaymentDetails.bind(this);
 		this.updatePaymentDetails = this.updatePaymentDetails.bind(this);
 		this.applyNewPaymentDetails = this.applyNewPaymentDetails.bind(this);
+		this.downloadInvoice = this.downloadInvoice.bind(this);
 	}
 
 	componentWillMount() {
@@ -45,6 +46,10 @@ export default class ContractComponent extends Component {
 				this.portalService = new BillwerkJS.Portal(this.token);
 				this.refreshContract();
 			});
+	}
+
+	downloadInvoice(invoiceId) {
+		window.location = this.portalService.invoicePdfDownloadUrl(invoiceId);
 	}
 
 	refreshContract() {
@@ -222,6 +227,35 @@ export default class ContractComponent extends Component {
 									)
 								}
 							})()}
+						</div>
+
+						<div className="content-block">
+							<fieldset>
+								<legend>
+									<i className="fa fa-file-text-o fa-fw"/> Ihre Dokumente
+								</legend>
+
+								<div className="list-group">
+									{(() => {
+										return _.map(this.state.contract.RecentInvoices, (invoice) => {
+											return (
+												<a className="list-group-item" href={void(0)} key={invoice.Id}>
+													<span className="pull-right text-muted small">
+														{invoice.TotalGross} {this.getContract().Currency}
+													</span>
+
+													<a href={void(0)} onClick={() => this.downloadInvoice(invoice.Id)}>
+														<i className="fa fa-download fa-fw"/>
+													</a>
+
+													{invoice.InvoiceNumber} <span
+													className="small text-muted">vom {moment(invoice.InvoiceDate).format('ll')}</span>
+												</a>
+											)
+										});
+									})()}
+								</div>
+							</fieldset>
 						</div>
 					</div>
 					<div className="col-md-6">
