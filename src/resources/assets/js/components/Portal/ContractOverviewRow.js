@@ -64,8 +64,10 @@ export default class ContractOverviewRow extends Component {
 			return (
 				<tr key={this.props.contract} className="small">
 					<td>
-						<strong>{this.getCurrentPlan().PlanName}</strong><br/>
-						{this.props.reference}
+						<a href={'/account/contract/' + this.props.contract}>
+							<strong>{this.getCurrentPlan().PlanName}</strong><br/>
+							{this.props.reference}
+						</a>
 					</td>
 					<td>
 						{(() => {
