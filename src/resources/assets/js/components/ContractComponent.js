@@ -157,6 +157,18 @@ export default class ContractComponent extends Component {
 									<i className={'pf ' + this.getPaymentIconName()}/> Ihre Zahlungsdaten
 								</legend>
 
+								{(() => {
+									if (this.state.contract.PaymentsBlocked) {
+										return (
+											<p className="alert alert-danger">
+												<strong>Achtung:</strong> Ihre aktuelle Zahlungsart kann momentan nicht
+												verwendet werden. Bitte wählen Sie eine alternative Zahlungsweise oder
+												kontaktieren Sie unseren Support!
+											</p>
+										)
+									}
+								})()}
+
 								<SepaDebit payment={this.getContract().PaymentBearer}/>
 
 								{(() => {
@@ -306,6 +318,39 @@ export default class ContractComponent extends Component {
 
 							</fieldset>
 						</div>
+
+						<div className="content-block">
+							<fieldset>
+								<legend>
+									<i className="fa fa-money fa-fw"/> Aktueller Saldo
+								</legend>
+
+								<p className={'lead text-center ' + (this.getContract().CurrentBalance <= 0 ? 'text-success' : 'text-danger')}>
+									{this.getContract().CurrentBalance * -1} {this.getContract().Currency}
+								</p>
+
+								{(() => {
+									if (this.getContract().CurrentBalance < 0) {
+										return (
+											<p className="text-muted small text-justify">
+												<i className="fa fa-info-circle fa-fw text-info"/>
+												Ihr Saldo wird automatisch mit der nächsten Gutschrift verrechnet.
+											</p>
+										)
+									} else if (this.getContract().CurrentBalance > 0) {
+										return (
+											<p className="text-muted small text-justify">
+												<i className="fa fa-info-circle fa-fw text-info"/>
+												Dieser Betrag ist mit der nächsten Abrechnung zur Zahlung fällig.
+												Sollten Sie Ihre Zahlungseinstellungen jetzt ändern, würde dieser Betrag
+												sofort abgerechnet.
+											</p>
+										)
+									}
+								})()}
+							</fieldset>
+						</div>
+
 					</div>
 				</div>
 			</div>
