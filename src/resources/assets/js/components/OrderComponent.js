@@ -269,6 +269,8 @@ export default class OrderComponent extends Component {
 														<tr key={index}>
 															<th>
 																{line.Description}
+																<span
+																	className="small text-muted">{line.ProductDescription ? ' (' + line.ProductDescription + ')' : ''}</span>
 																<br/>
 																{moment(line.PeriodStart).format('ll')}
 																- {moment(line.PeriodEnd).format('ll')}
@@ -287,7 +289,10 @@ export default class OrderComponent extends Component {
 												if (this.state.orderPreview.RecurringFee.LineItems.length > 1) {
 													return (
 														<tfoot>
-														<tr style={{borderTop: '3px solid black', background: '#f1f1f1'}}>
+														<tr style={{
+															borderTop: '3px solid black',
+															background: '#f1f1f1'
+														}}>
 															<th>Gesamt</th>
 															<td colSpan={1}></td>
 															<td>{this.state.orderPreview.Total} {this.getCurrency()}</td>
