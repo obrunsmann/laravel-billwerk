@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Contract extends Model
 {
 	protected $table = 'lefamed_billwerk_contracts';
-
+	public $incrementing = false;
 	protected $fillable = [
 		'id',
 		'customer_id',

@@ -44,6 +44,14 @@ class Customer extends Model
 		];
 	}
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function contracts()
+	{
+		return $this->hasMany(Contract::class);
+	}
+
 	protected static function boot()
 	{
 		// -- On Create Event -- //
