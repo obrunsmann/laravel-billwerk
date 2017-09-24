@@ -4,6 +4,7 @@ namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCreated;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\CustomerChanged;
 
 /**
@@ -27,6 +28,9 @@ class WebhookController extends Controller
 		switch ($content->Event) {
 			case 'CustomerChanged':
 				dispatch(new CustomerChanged($content->CustomerId));
+				break;
+			case 'ContractCreated':
+				dispatch(new ContractCreated($content->ContractId));
 				break;
 		}
 
