@@ -21,6 +21,7 @@ class CreateContractsTable extends Migration
 			$table->unsignedInteger('customer_id');
 			$table->string('plan_id', 24);
 
+			$table->dateTime('end_date')->nullable();
 			$table->timestamps();
 
 			$table->foreign('customer_id')

@@ -15,7 +15,8 @@ class Contract extends Model
 	protected $fillable = [
 		'id',
 		'customer_id',
-		'plan_id'
+		'plan_id',
+		'end_date'
 	];
 
 }

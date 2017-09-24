@@ -3,6 +3,7 @@
 namespace Lefamed\LaravelBillwerk\Jobs\Webhooks;
 
 use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -57,7 +58,8 @@ class ContractCreated implements ShouldQueue
 			\Lefamed\LaravelBillwerk\Models\Contract::create([
 				'id' => $res->Id,
 				'plan_id' => $res->PlanId,
-				'customer_id' => $customer->id
+				'customer_id' => $customer->id,
+				'end_date' => isset($res->EndDate) ? Carbon::parse($res->EndDate) : null
 			]);
 		} catch (\Exception $e) {
 			Bugsnag::notifyException($e);
