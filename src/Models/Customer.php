@@ -2,6 +2,7 @@
 
 namespace Lefamed\LaravelBillwerk\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Lefamed\LaravelBillwerk\Jobs\SyncBillwerkCustomer;
@@ -35,6 +36,11 @@ class Customer extends Model
 		'city',
 		'country'
 	];
+
+	public function scopeByBillwerkId(Builder $builder, $id)
+	{
+		return $builder->where('billwerk_id', $id);
+	}
 
 	/**
 	 * @return string

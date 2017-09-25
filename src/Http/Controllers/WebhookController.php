@@ -8,6 +8,7 @@ use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCancelled;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractChanged;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCreated;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\CustomerChanged;
+use Lefamed\LaravelBillwerk\Jobs\Webhooks\OrderSucceeded;
 
 /**
  * Class WebhookController
@@ -39,6 +40,9 @@ class WebhookController extends Controller
 				break;
 			case 'ContractCancelled':
 				dispatch(new ContractCancelled($content->ContractId));
+				break;
+			case 'OrderSucceeded':
+				dispatch(new OrderSucceeded($content->ContractId, $content->OrderId));
 				break;
 		}
 

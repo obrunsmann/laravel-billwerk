@@ -59,7 +59,6 @@ class ContractChanged implements ShouldQueue
 				$contract->delete();
 			}
 		} catch (\Exception $e) {
-			dd($e);
 			Bugsnag::notifyException($e);
 			Log::error($e->getMessage());
 		}
