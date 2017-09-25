@@ -67,7 +67,6 @@ class ContractCancelled implements ShouldQueue
 			//send notification
 			$customer->notify(new \Lefamed\LaravelBillwerk\Notifications\ContractCancelled($contract));
 		} catch (\Exception $e) {
-			dump($e->getMessage());
 			Bugsnag::notifyException($e);
 			Log::error($e->getMessage());
 		}
