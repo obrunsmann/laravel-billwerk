@@ -3,6 +3,7 @@
 namespace Lefamed\LaravelBillwerk\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Lefamed\LaravelBillwerk\Jobs\SyncBillwerkCustomer;
 use Lefamed\LaravelBillwerk\Transformers\Model\CustomerTransformer;
 
@@ -12,6 +13,8 @@ use Lefamed\LaravelBillwerk\Transformers\Model\CustomerTransformer;
  */
 class Customer extends Model
 {
+	use Notifiable;
+
 	protected $table = 'lefamed_billwerk_customers';
 
 	protected $fillable = [
@@ -32,6 +35,14 @@ class Customer extends Model
 		'city',
 		'country'
 	];
+
+	/**
+	 * @return string
+	 */
+	public function routeNotificationForMail(): string
+	{
+		return $this->email_address;
+	}
 
 	/**
 	 * @return array

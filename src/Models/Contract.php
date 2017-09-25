@@ -19,4 +19,12 @@ class Contract extends Model
 		'end_date'
 	];
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function customer()
+	{
+		return $this->belongsTo(Customer::class);
+	}
+
 }

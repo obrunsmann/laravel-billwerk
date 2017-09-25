@@ -4,6 +4,8 @@ namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCancelled;
+use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractChanged;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCreated;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\CustomerChanged;
 
@@ -31,6 +33,12 @@ class WebhookController extends Controller
 				break;
 			case 'ContractCreated':
 				dispatch(new ContractCreated($content->ContractId));
+				break;
+			case 'ContractChanged':
+				dispatch(new ContractChanged($content->ContractId));
+				break;
+			case 'ContractCancelled':
+				dispatch(new ContractCancelled($content->ContractId));
 				break;
 		}
 
