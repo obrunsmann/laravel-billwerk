@@ -16,7 +16,8 @@ class Contract extends Model
 		'id',
 		'customer_id',
 		'plan_id',
-		'end_date'
+		'end_date',
+		'reference_code'
 	];
 
 	/**

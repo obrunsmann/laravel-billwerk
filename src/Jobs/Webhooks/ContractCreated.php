@@ -59,7 +59,8 @@ class ContractCreated implements ShouldQueue
 				'id' => $res->Id,
 				'plan_id' => $res->PlanId,
 				'customer_id' => $customer->id,
-				'end_date' => isset($res->EndDate) ? Carbon::parse($res->EndDate) : null
+				'end_date' => isset($res->EndDate) ? Carbon::parse($res->EndDate) : null,
+				'reference_code' => $res->ReferenceCode
 			]);
 		} catch (\Exception $e) {
 			Bugsnag::notifyException($e);

@@ -42,7 +42,7 @@ class ContractChanged implements ShouldQueue
 			$res = $contractClient->get($this->contractId)->data();
 
 			//check if contract already exists
-			if (\Lefamed\LaravelBillwerk\Models\Contract::find($res->Id)) {
+			if (!$contract = \Lefamed\LaravelBillwerk\Models\Contract::find($res->Id)) {
 				return;
 			}
 
@@ -53,14 +53,13 @@ class ContractChanged implements ShouldQueue
 				return;
 			}
 
-			//customer found, continue
-			\Lefamed\LaravelBillwerk\Models\Contract::create([
-				'id' => $res->Id,
-				'plan_id' => $res->PlanId,
-				'customer_id' => $customer->id,
-				'end_date' => isset($res->EndDate) ? Carbon::parse($res->EndDate) : null
-			]);
+			// check up what happend with the contract -> trial ended, contract ended etc
+			if (isset($res->EndDate) && Carbon::parse($res->EndDate)->isPast()) {
+				// contract has ended, remove it
+				$contract->delete();
+			}
 		} catch (\Exception $e) {
+			dd($e);
 			Bugsnag::notifyException($e);
 			Log::error($e->getMessage());
 		}

@@ -4,7 +4,6 @@ namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
-use Lefamed\LaravelBillwerk\Billwerk\Contract;
 use Lefamed\LaravelBillwerk\Forms\CustomerAddressForm;
 use Lefamed\LaravelBillwerk\Models\Customer;
 
@@ -30,12 +29,11 @@ class AccountController extends Controller
 		$customer = $this->getCustomer();
 
 		//get all contracts for this customer
-		$customerService = new \Lefamed\LaravelBillwerk\Billwerk\Customer();
-		$contracts = $customerService->getContracts($customer->billwerk_id)->data();
+		$contracts = $customer->contracts;
 
 		return view('ld-billwerk::account.index', [
 			'customer' => $customer,
-			'contracts' => $contracts->pluck('ReferenceCode', 'Id')
+			'contracts' => $contracts->pluck('reference_code', 'id')
 		]);
 	}
 
