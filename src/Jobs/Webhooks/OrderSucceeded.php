@@ -60,7 +60,9 @@ class OrderSucceeded implements ShouldQueue
 
 			//search the customer
 			$customer = Customer::byBillwerkId($order->CustomerId)->first();
-			$customer->notify(new \Lefamed\LaravelBillwerk\Notifications\OrderSucceeded($order));
+			if ($customer) {
+				$customer->notify(new \Lefamed\LaravelBillwerk\Notifications\OrderSucceeded($order));
+			}
 		} catch (\Exception $e) {
 			dump($e);
 			Bugsnag::notifyException($e);
