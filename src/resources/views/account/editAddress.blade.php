@@ -2,7 +2,8 @@
 
 @section('content')
 	<div class="content-block">
-		<h1>Anschrift bearbeiten</h1>
+		<h1>Rechnungsadresse</h1>
+		<p>Pflegen Sie hier die Adresse des Rechnungsempfängers und Vertragspartners.</p>
 
 		{!! form_start($form) !!}
 		{{ csrf_field() }}
