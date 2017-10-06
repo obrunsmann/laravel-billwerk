@@ -76,6 +76,10 @@ class CustomerController extends Controller
 			return response()->json($customer);
 		} else {
 			flash(trans('ld-billwerk::customer.update.flash.success'))->success();
+
+			if ($request->session()->has('order')) {
+				return redirect()->route('billwerk.order', ['planVariantId' => $request->session()->get('order')]);
+			}
 			return redirect()->back();
 		}
 	}

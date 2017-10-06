@@ -39,7 +39,7 @@
 							{{ $customer->country }}
 						</address>
 
-						<a href="{{ route('billwerk.account.edit-address') }}">
+						<a href="{{ route('billwerk.order.changeAddress', ['planVariantId' => $planVariantId]) }}">
 							<i class="fa fa-pencil fa-fw"></i> Ändern
 						</a>
 					</fieldset>

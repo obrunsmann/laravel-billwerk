@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['namespace' => '\Lefamed\LaravelBillwerk\Http\Controllers', 'middleware' => ['web', 'auth']], function () {
+Route::group(['namespace' => '\Lefamed\LaravelBillwerk\Http\Controllers', 'middleware' => ['web']], function () {
 	require __DIR__ . '/routes/web.php';
 });
 

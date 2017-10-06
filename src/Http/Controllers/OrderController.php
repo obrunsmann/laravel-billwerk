@@ -2,6 +2,7 @@
 
 namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Lefamed\LaravelBillwerk\Billwerk\Order;
 use Lefamed\LaravelBillwerk\Billwerk\PlanVariant;
@@ -20,7 +21,24 @@ class OrderController extends Controller
 	 */
 	public function index($planVariantId, Request $request)
 	{
+		if (\Auth::guest()) {
+			return redirect()->route('register', ['order' => $planVariantId]);
+		}
+
+		$request->session()->forget('order');
+
 		$customer = $request->user()->merchant->getCustomer();
 		return view('ld-billwerk::order.index', compact('planVariantId', 'customer'));
+	}
+
+	/**
+	 * @param string $planVariantId
+	 * @param Request $request
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	public function changeAddress(string $planVariantId, Request $request): RedirectResponse
+	{
+		$request->session()->put('order', $planVariantId);
+		return redirect()->route('billwerk.account.edit-address');
 	}
 }
