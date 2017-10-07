@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import 'moment/locale/de';
 import 'paymentfont/css/paymentfont.css';
 
+import BearerErrorCode from './Portal/BearerErrorCode';
 import CreditCardComponent from './Order/CreditCardComponent';
 import SepaDebitComponent from './Order/SepaDebitComponent';
 
@@ -18,7 +19,7 @@ export default class OrderComponent extends Component {
 		this.state = {
 			orderPreview: null,
 			loadingOverlay: false,
-			paymentMethod: 'Debit:FakePSP',
+			paymentMethod: 'CreditCard:Stripe',
 			termsAccepted: false,
 			paymentDetails: {},
 			paymentDetailsValid: false,
@@ -78,6 +79,21 @@ export default class OrderComponent extends Component {
 		} else {
 			return this.state.orderPreview.RecurringFee.FeePeriod.Quantity + ' ' + this.state.orderPreview.RecurringFee.FeePeriod.Unit;
 		}
+	}
+
+	isTrial() {
+		return this.state.orderPreview.IsTrial;
+	}
+
+	getTrialPeriod() {
+		let unit, quantity = this.state.orderPreview.TrialPeriod.Quantity;
+		switch (this.state.orderPreview.TrialPeriod.Unit) {
+			case 'Day':
+				unit = quantity !== 1 ? 'Tage' : 'Tag;'
+				break;
+		}
+
+		return quantity + ' ' + unit;
 	}
 
 	getCurrency() {
@@ -145,7 +161,7 @@ export default class OrderComponent extends Component {
 							// -- order failed -- //
 							//error occured while executing payment
 							this.setState({
-								paymentError: _.head(err.errorCode),
+								paymentError: BearerErrorCode.getPaymentErrorMessage(_.head(err.errorCode)),
 								loadingOverlay: false
 							});
 						}
@@ -167,64 +183,11 @@ export default class OrderComponent extends Component {
 			couponCode: this.state.couponCode
 		})
 			.then((res) => {
-				console.log(res.data);
 				this.setState({
 					orderPreview: res.data,
 					applyCouponButtonDisabled: false
 				});
 			});
-	}
-
-	static getPaymentErrorMessage(errorCode) {
-		let messages = {
-			'UnmappedError': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
-			'Unknown': 'Unbekannter Fehler, versuchen Sie eine alternative Zahlungsart oder prüfen Sie die Eingabe Ihrer Daten erneut!',
-			'InvalidBic': 'BIC ungültig!',
-			'IteroServerError': 'Serverfehler, bitte versuchen Sie es in einem Augenblick erneut!',
-			'PspServerError': 'Die Zahlung konnte nicht zum Zahlungsanbieter weitergeleitet werden. Bitte versuchen Sie es später erneut!',
-			'Timeout': 'Zeitüberschreitung bei der Verbindung. Bitte versuchen Sie es später erneut.',
-			'InvalidKey': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InvalidConfiguration': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InvalidPaymentData': 'Eingegebene Zahlungsweise ist nicht gültig. Bitte kontrollieren Sie Ihre Eingabe!',
-			'InvalidData': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'Aborted': 'Zahlung wurde abgebrochen.',
-			'AcquirerServerError': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'AuthorizationRejected': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'RateLimit': 'Zu häufige Anfragen. Bitte versuchen Sie es später erneut.',
-			'InvalidTransaction': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'AmountLimitExceeeded': 'Die Zahlung wurde wegen mangelnder Deckung abgewiesen. Bitte nutze eine andere Zahlungsweise.',
-			'InvalidPaymentMethod': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InvalidCardType': 'Die eingegebene Kreditkarte wird von uns leider nicht unterstützt. Bitte wähle eine andere Zahlungsweise.',
-			'InvalidCardNumber': 'Die eingegebene Kreditkartennummer ist nicht gültig.',
-			'InvalidExpirationDate': 'Ablaufdatum ist ungültig.',
-			'InvalidCardCvc': 'CVC (Sicherheitscode) ist ungültig. Bitte kontrollieren Sie Ihre Eingabe und versuchen Sie es erneut.',
-			'InvalidCardHolder': 'Bitte kontrollieren Sie den Karteninhaber. Die Eingabe war nicht gültig.',
-			'3DsProblem': '3D-Secure ist fehlgeschlagen. Bitte versuchen Sie es erneut oder wähle eine andere Zahlungsweise.',
-			'InvalidAmount': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InvalidCurrency': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InvalidAccountNumber': 'Fehlerhafte Kontonummer, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
-			'InvalidAccountHolder': 'Fehlerhafter Kontoinhaber, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
-			'InvalidBankCode': 'Fehlerhafte Bankleitzahl, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
-			'InvalidIban': 'Fehlerhafte IBAN, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
-			'InvalidCountry': 'Fehlerhaftes Land, bitte prüfen Sie Ihre Daten und versuchen Sie es erneut!',
-			'BearerRejected': 'Die Zahlungsweise wurde abgelehnt. Details wurden uns aus Datenschutzgründen nicht übermittelt. Bitte versuchen Sie es erneut mit einer alternativen Zahlungsart!',
-			'BearerExpired': 'Die Zahlungsweise ist abgelaufen. Bitte nutze eine alternative Zahlungsweise.',
-			'InvalidCouponCode': 'Der Gutscheincode ist nicht gültig, bitte prüfen Sie Ihre Eingabe und versuchen Sie es erneut!',
-
-			'LimitExceeded': 'Limit überschritten. Bitte nutze eine alternative Zahlungsweise.',
-			'BearerInvalid': 'Die Zahlungsweise wurde abgelehnt. Details wurden uns aus Datenschutzgründen nicht übermittelt. Bitte versuchen Sie es erneut mit einer alternativen Zahlungsart!',
-			'LoginError': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InsufficientBalance': 'Der Kontostand reicht leider nicht aus. Bitte versuchen Sie es später erneut.',
-			'AlreadyExecuted': 'Die Zahlung wurde bereits abgesendet.',
-			'InvalidPreconditions': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'InternalError': 'Interner Fehler. .',
-			'InternalProviderError': 'Unbekannter Fehler.',
-			'PermissionDenied': 'Unbekannter Fehler. Bitte versuchen Sie es später erneut.',
-			'Canceled': 'Zahlung abgebrochen.',
-			'Rejected': 'Zahlung zurückgewiesen.'
-		};
-
-		return messages[errorCode] || messages['Unknown'];
 	}
 
 	isOrderValid() {
@@ -243,7 +206,7 @@ export default class OrderComponent extends Component {
 									if (this.state.paymentError) {
 										return (
 											<p className="alert alert-warning" style={{marginTop: 20}}>
-												{this.getPaymentErrorMessage(this.state.paymentError)}
+												{this.state.paymentError}
 											</p>
 										)
 									}
@@ -251,59 +214,82 @@ export default class OrderComponent extends Component {
 
 								<div className="content-block">
 									<fieldset>
-										<legend>Übersicht</legend>
-										<table className="table table-condensed">
-											<thead>
-											<tr>
-												<th>Paket</th>
-												<th>Einzelpreis</th>
-												<th>Summe Netto</th>
-												<th>MwSt.</th>
-												<th>Summe Brutto</th>
-											</tr>
-											</thead>
-											<tbody>
-											{(() => {
-												return _.map(this.state.orderPreview.RecurringFee.LineItems, (line, index) => {
-													return (
-														<tr key={index}>
-															<th>
-																{line.Description}
-																<span
-																	className="small text-muted">{line.ProductDescription ? ' (' + line.ProductDescription + ')' : ''}</span>
-																<br/>
-																{moment(line.PeriodStart).format('ll')}
-																- {moment(line.PeriodEnd).format('ll')}
-															</th>
-															<td>{line.PricePerUnit} {this.getCurrency()}
-																/ {this.getFeePeriod()}</td>
-															<td>{line.TotalNet} {this.getCurrency()}</td>
-															<td>{line.TotalVat} {this.getCurrency()}</td>
-															<td>{line.TotalGross} {this.getCurrency()}</td>
+										<legend>{this.isTrial() ? 'Ihr kostenloser Testzeitraum' : 'Übersicht'}</legend>
+
+										{(() => {
+											if (!this.isTrial()) {
+												//if order does not start with a trial, display the line items
+												return (
+													<table className="table table-condensed">
+														<thead>
+														<tr>
+															<th>Paket</th>
+															<th>Einzelpreis</th>
+															<th>Summe Netto</th>
+															<th>MwSt.</th>
+															<th>Summe Brutto</th>
 														</tr>
-													)
-												});
-											})()}
-											</tbody>
-											{(() => {
-												if (this.state.orderPreview.RecurringFee.LineItems.length > 1) {
-													return (
-														<tfoot>
-														<tr style={{
-															borderTop: '3px solid black',
-															background: '#f1f1f1'
-														}}>
-															<th>Gesamt</th>
-															<td colSpan={1}></td>
-															<td>{this.state.orderPreview.Total} {this.getCurrency()}</td>
-															<td>{this.state.orderPreview.TotalVat} {this.getCurrency()}</td>
-															<td>{this.state.orderPreview.TotalGross} {this.getCurrency()}</td>
-														</tr>
-														</tfoot>
-													)
-												}
-											})()}
-										</table>
+														</thead>
+														<tbody>
+														{(() => {
+															return _.map(this.state.orderPreview.RecurringFee.LineItems, (line, index) => {
+																return (
+																	<tr key={index}>
+																		<th>
+																			{line.Description}
+																			<span
+																				className="small text-muted">{line.ProductDescription ? ' (' + line.ProductDescription + ')' : ''}</span>
+																			<br/>
+																			{moment(line.PeriodStart).format('ll')}
+																			- {moment(line.PeriodEnd).format('ll')}
+																		</th>
+																		<td>{line.PricePerUnit} {this.getCurrency()}
+																			/ {this.getFeePeriod()}</td>
+																		<td>{line.TotalNet} {this.getCurrency()}</td>
+																		<td>{line.TotalVat} {this.getCurrency()}</td>
+																		<td>{line.TotalGross} {this.getCurrency()}</td>
+																	</tr>
+																)
+															});
+														})()}
+														</tbody>
+														{(() => {
+															if (this.state.orderPreview.RecurringFee.LineItems.length > 1) {
+																return (
+																	<tfoot>
+																	<tr style={{
+																		borderTop: '3px solid black',
+																		background: '#f1f1f1'
+																	}}>
+																		<th>Gesamt</th>
+																		<td colSpan={1}></td>
+																		<td>{this.state.orderPreview.Total} {this.getCurrency()}</td>
+																		<td>{this.state.orderPreview.TotalVat} {this.getCurrency()}</td>
+																		<td>{this.state.orderPreview.TotalGross} {this.getCurrency()}</td>
+																	</tr>
+																	</tfoot>
+																)
+															}
+														})()}
+													</table>
+												)
+											} else {
+												//if order starts with a trial, display some information about the trial
+												return (
+													<div>
+														<p className="lead">
+															Testen Sie coogaa.de {this.getTrialPeriod()} kostenlos und
+															unverbindlich!
+														</p>
+														<p>
+															Sie können innerhalb des Testzeitraums bequem über die
+															Händler-Konsole jederzeit kündigen. In diesem Fall belasten
+															wir Ihr Konto nicht!
+														</p>
+													</div>
+												)
+											}
+										})()}
 
 										<p>
 											<strong>Hinweis:</strong>
@@ -315,6 +301,17 @@ export default class OrderComponent extends Component {
 										</p>
 
 										<hr/>
+
+										{((() => {
+											if (this.state.orderPreview.Coupon) {
+												if (this.state.orderPreview.Coupon.ErrorCode) {
+													return <span className="text-danger">Dieser Code ist leider nicht gültig!</span>
+												} else if (this.state.orderPreview.Coupon.CouponId) {
+													return <span
+														className="text-success">Gutschein "{this.state.orderPreview.Coupon.CouponCode}" erfolgreich angewendet!</span>
+												}
+											}
+										}))()}
 
 										<form className="form-inline">
 											<div className="row">
@@ -344,8 +341,8 @@ export default class OrderComponent extends Component {
 											<div className="col-sm-6">
 												<label>
 													<input type="radio" name="payment-method"
-														   onChange={() => this.setState({paymentMethod: 'Debit:FakePSP'})}
-														   checked={this.state.paymentMethod === 'Debit:FakePSP'}/>
+														   onChange={() => this.setState({paymentMethod: 'Debit'})}
+														   checked={this.state.paymentMethod === 'Debit'}/>
 
 													<ul className="list-inline text-center payment-methods-o">
 														<li><i className="pf pf-sepa"></i></li>
@@ -355,8 +352,8 @@ export default class OrderComponent extends Component {
 											<div className="col-sm-6">
 												<label>
 													<input type="radio" name="payment-method"
-														   onChange={() => this.setState({paymentMethod: 'CreditCard:FakePSP'})}
-														   checked={this.state.paymentMethod === 'CreditCard:FakePSP'}/>
+														   onChange={() => this.setState({paymentMethod: 'CreditCard:Stripe'})}
+														   checked={this.state.paymentMethod === 'CreditCard:Stripe'}/>
 
 													<ul className="list-inline text-center payment-methods-o">
 														<li><i className="pf pf-visa"></i></li>
@@ -370,9 +367,9 @@ export default class OrderComponent extends Component {
 
 										{(() => {
 											switch (this.state.paymentMethod) {
-												case 'Debit:FakePSP':
+												case 'Debit':
 													return <SepaDebitComponent onChange={this.updatePaymentDetails}/>
-												case 'CreditCard:FakePSP':
+												case 'CreditCard:Stripe':
 													return <CreditCardComponent onChange={this.updatePaymentDetails}/>
 											}
 										})()}

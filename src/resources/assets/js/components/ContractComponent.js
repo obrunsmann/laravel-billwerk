@@ -6,7 +6,9 @@ import moment from 'moment';
 
 moment.locale('de');
 
+import BearerErrorCode from './Portal/BearerErrorCode';
 import SepaDebit from './Portal/PaymentMethods/SepaDebit';
+import CreditCard from './Portal/PaymentMethods/CreditCard';
 
 import SepaDebitComponent from './Order/SepaDebitComponent';
 import CreditCardComponent from './Order/CreditCardComponent';
@@ -24,7 +26,9 @@ export default class ContractComponent extends Component {
 
 			changePaymentDetails: false,
 			paymentDetailsValid: false,
-			paymentDetails: {}
+			paymentDetails: {},
+
+			paymentErrorCode: null
 		};
 
 		//bind context to event handlers
@@ -121,15 +125,19 @@ export default class ContractComponent extends Component {
 		let paymentService = new BillwerkPaymentService({
 			publicApiKey: bwPublicKey
 		}, () => {
-			console.log(paymentService, this.state.paymentDetails);
 			this.portalService.paymentChange(
 				paymentService,
 				this.state.paymentDetails,
 				(res) => {
+					this.setState({paymentErrorCode: null});
 					this.refreshContract();
 				},
 				(err) => {
-					console.error(err);
+					this.setState({
+						loading: false,
+						changePaymentDetails: true,
+						paymentErrorCode: BearerErrorCode.getPaymentErrorMessage(_.head(err.errorCode))
+					});
 				}
 			);
 		}, () => {
@@ -169,7 +177,15 @@ export default class ContractComponent extends Component {
 									}
 								})()}
 
-								<SepaDebit payment={this.getContract().PaymentBearer}/>
+								{(() => {
+									//display payment method information
+									switch (this.getContract().PaymentBearer.Type) {
+										case 'CreditCard':
+											return <CreditCard payment={this.getContract().PaymentBearer}/>
+										case 'SepaDebit':
+											return <SepaDebit payment={this.getContract().PaymentBearer}/>
+									}
+								})()}
 
 								{(() => {
 									if (!this.state.changePaymentDetails) {
@@ -215,6 +231,16 @@ export default class ContractComponent extends Component {
 											</div>
 
 											<hr/>
+
+											{(() => {
+												if (this.state.paymentErrorCode) {
+													return (
+														<div className="alert alert-danger">
+															{this.state.paymentErrorCode}
+														</div>
+													)
+												}
+											})()}
 
 											{(() => {
 												switch (this.state.paymentMethod) {

@@ -8,7 +8,7 @@ export default class CreditCartComponent extends Component {
 		super();
 
 		this.state = {
-			bearer: 'CreditCard:FakePSP',
+			bearer: 'CreditCard:Stripe',
 			cardNumber: '',
 			expiryMonth: '',
 			expiryYear: '',

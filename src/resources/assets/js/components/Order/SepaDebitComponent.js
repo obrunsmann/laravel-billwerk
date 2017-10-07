@@ -55,6 +55,13 @@ export default class SepaDebitComponent extends Component {
 
 	render() {
 		return (
+			<p className="well">
+				Die Zahlungsweise SEPA-Lastschrift wird voraussichtlich ab
+				<strong>Mitte Oktober</strong> verfügbar sein!
+			</p>
+		)
+
+		return (
 			<div>
 				<div className="form-group">
 					<input placeholder="Kontoinhaber" type="text" name="accountHolder" className="form-control"
