@@ -23,8 +23,8 @@ abstract class BaseClient
 	 *
 	 * @var string
 	 */
-	protected $baseUrl = 'https://sandbox.billwerk.com/api/v1/';
-	protected $authUrl = 'https://sandbox.billwerk.com/oauth/token';
+	protected $baseUrl;
+	protected $authUrl;
 
 	/**
 	 * Points to the HTTP Resource
@@ -41,6 +41,9 @@ abstract class BaseClient
 	public function __construct()
 	{
 		$this->httpClient = new Client();
+
+		$this->baseUrl = config('laravel-billwerk.api.baseUrl');
+		$this->authUrl = config('laravel-billwerk.api.authUrl');
 
 		if (\Cache::has(config('laravel-billwerk.auth.token_cache_key'))) {
 			$this->accessToken = \Cache::get(config('laravel-billwerk.auth.token_cache_key'));
