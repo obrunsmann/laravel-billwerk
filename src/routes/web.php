@@ -1,12 +1,12 @@
 <?php
 
-// -- Order Routes -- //
-Route::get('/order/{planVariantId}', 'OrderController@index')
-	->name('billwerk.order');
-Route::get('/order/{planVariantId}/change-address', 'OrderController@changeAddress')
-	->name('billwerk.order.changeAddress');
-
 Route::group(['middleware' => 'auth'], function () {
+	// -- Order Routes -- //
+	Route::get('/order/{planVariantId}', 'OrderController@index')
+		->name('billwerk.order');
+	Route::get('/order/{planVariantId}/change-address', 'OrderController@changeAddress')
+		->name('billwerk.order.changeAddress');
+
 	// -- Account Page -- //
 	Route::get('/account', 'AccountController@index')
 		->name('billwerk.account');

@@ -21,10 +21,6 @@ class OrderController extends Controller
 	 */
 	public function index($planVariantId, Request $request)
 	{
-		if (\Auth::guest()) {
-			return redirect()->route('register', ['order' => $planVariantId]);
-		}
-
 		$request->session()->forget('order');
 
 		$customer = $request->user()->merchant->getCustomer();
