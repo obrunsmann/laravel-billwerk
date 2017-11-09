@@ -10,6 +10,7 @@
 		const BillwerkPaymentService = BillwerkJS.Payment;
 		const bwPublicKey = '{{ config('laravel-billwerk.auth.public_key') }}';
 		const contractId = '{{ $contractId }}';
+		const finishUrl = '{{ route('billwerk.order.finish') }}';
 	</script>
 	<script type="text/javascript" src="{{ mix('js/portal.js') }}"></script>
 @endpush

@@ -123,14 +123,20 @@ export default class ContractComponent extends Component {
 
 		//update the payment details
 		let paymentService = new BillwerkPaymentService({
-			publicApiKey: bwPublicKey
+			publicApiKey: bwPublicKey,
+			providerReturnUrl: finishUrl
 		}, () => {
 			this.portalService.paymentChange(
 				paymentService,
 				this.state.paymentDetails,
 				(res) => {
-					this.setState({paymentErrorCode: null});
-					this.refreshContract();
+					//handle black label psp
+					if(res.Url) {
+						location.href = res.Url;
+					} else {
+						this.setState({paymentErrorCode: null});
+						this.refreshContract();
+					}
 				},
 				(err) => {
 					this.setState({
@@ -182,7 +188,7 @@ export default class ContractComponent extends Component {
 									switch (this.getContract().PaymentBearer.Type) {
 										case 'CreditCard':
 											return <CreditCard payment={this.getContract().PaymentBearer}/>
-										case 'SepaDebit':
+										case 'BankAccount':
 											return <SepaDebit payment={this.getContract().PaymentBearer}/>
 									}
 								})()}

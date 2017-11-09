@@ -16,6 +16,10 @@ Route::group(['middleware' => 'auth'], function () {
 		->name('billwerk.account.edit-address');
 	Route::get('/account/contract/{contractId}', 'ContractController@show');
 
+	// -- PSP Change -- //
+	Route::get('/account/psp/finalize', 'PspController@finalize')
+		->name('billwerk.psp.finalize');
+
 
 	// -- Customer -- //
 	Route::resource('/customer', 'CustomerController', [
