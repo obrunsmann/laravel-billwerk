@@ -5,11 +5,7 @@ export default class SepaDebitComponent extends Component {
 		super();
 
 		this.state = {
-			bearer: 'Debit:FakePSP',
-			iban: '',
-			bic: '',
-			accountHolder: '',
-			acceptMandate: false
+			bearer: 'Debit:GoCardless'
 		};
 
 		this.handleInputChange = this.handleInputChange.bind(this);
@@ -17,7 +13,13 @@ export default class SepaDebitComponent extends Component {
 		this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
 	}
 
+	componentDidMount() {
+		this.props.onChange(this.state, this.isFormValid());
+	}
+
 	isFormValid() {
+		return true;
+
 		return this.state.iban !== '' &&
 			this.state.bic !== '' &&
 			this.state.accountHolder !== '' &&
@@ -55,9 +57,8 @@ export default class SepaDebitComponent extends Component {
 
 	render() {
 		return (
-			<p className="well">
-				Die Zahlungsweise SEPA-Lastschrift wird voraussichtlich ab
-				<strong>Mitte Oktober</strong> verfügbar sein!
+			<p>
+				Sie werden auf unseren Zahlungsdienstleister weitergeleitet, um das SEPA Mandat einzurichten!
 			</p>
 		)
 

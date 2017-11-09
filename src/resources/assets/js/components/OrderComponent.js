@@ -140,7 +140,8 @@ export default class OrderComponent extends Component {
 			.then((res) => {
 				//create the payment service
 				let paymentService = new BillwerkPaymentService({
-					publicApiKey: bwPublicKey
+					publicApiKey: bwPublicKey,
+					providerReturnUrl: finishUrl
 				}, () => {
 					//payment service is ready, continue with the payment process
 					this.signupService.paySignupInteractive(
@@ -152,10 +153,14 @@ export default class OrderComponent extends Component {
 							Currency: res.data.Currency
 						},
 						(res) => {
-							// -- order successfull -- //
-							this.setState({
-								paymentSuccess: true
-							});
+							if(res.Url) {
+								location.href = res.Url;
+							} else {
+								// -- order successfull -- //
+								this.setState({
+									paymentSuccess: true
+								});
+							}
 						},
 						(err) => {
 							// -- order failed -- //
@@ -341,7 +346,10 @@ export default class OrderComponent extends Component {
 											<div className="col-sm-6">
 												<label>
 													<input type="radio" name="payment-method"
-														   onChange={() => this.setState({paymentMethod: 'Debit'})}
+														   onChange={() => this.setState({
+															   paymentMethod: 'Debit',
+															   paymentDetailsValid: true
+														   })}
 														   checked={this.state.paymentMethod === 'Debit'}/>
 
 													<ul className="list-inline text-center payment-methods-o">

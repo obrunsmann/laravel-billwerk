@@ -2,6 +2,8 @@
 
 Route::group(['middleware' => 'auth'], function () {
 	// -- Order Routes -- //
+	Route::get('/order/finish', 'OrderController@finish')
+		->name('billwerk.order.finish');
 	Route::get('/order/{planVariantId}', 'OrderController@index')
 		->name('billwerk.order');
 	Route::get('/order/{planVariantId}/change-address', 'OrderController@changeAddress')

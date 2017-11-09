@@ -27,6 +27,11 @@ class OrderController extends Controller
 		return view('ld-billwerk::order.index', compact('planVariantId', 'customer'));
 	}
 
+	public function finish()
+	{
+		return view('ld-billwerk::order.finish');
+	}
+
 	/**
 	 * @param string $planVariantId
 	 * @param Request $request

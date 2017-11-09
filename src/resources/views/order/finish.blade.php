@@ -7,13 +7,6 @@
 @push('scripts')
 	@include('vendor.ld-billwerk.inc.billwerkJS')
 
-	<script type="text/javascript">
-		const BillwerkPaymentService = BillwerkJS.Payment;
-		var bwPublicKey = '{{ config('laravel-billwerk.auth.public_key') }}';
-		var planVariantId = '{{ $planVariantId }}';
-		const finishUrl = '{{ route('billwerk.order.finish') }}';
-	</script>
-
 	<script src="{{ mix('js/order.js') }}" type="text/javascript"></script>
 @endpush
 
