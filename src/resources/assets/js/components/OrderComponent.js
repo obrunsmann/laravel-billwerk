@@ -19,7 +19,7 @@ export default class OrderComponent extends Component {
 		this.state = {
 			orderPreview: null,
 			loadingOverlay: false,
-			paymentMethod: 'CreditCard:Stripe',
+			paymentMethod: 'Debit',
 			termsAccepted: false,
 			paymentDetails: {},
 			paymentDetailsValid: false,
