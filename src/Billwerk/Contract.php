@@ -3,19 +3,19 @@
 namespace Lefamed\LaravelBillwerk\Billwerk;
 
 /**
- * Class Contract
- * @package Lefamed\LaravelBillwerk\Billwerk
+ * {@inheritDoc}
  */
 class Contract extends BaseClient
 {
-	protected $resource = 'Contracts';
+    protected $resource = 'Contracts';
 
-	/**
-	 * @param $contractId
-	 * @return ApiResponse
-	 */
-	public function selfServiceToken($contractId)
-	{
-		return $this->get($contractId, 'SelfServiceToken');
-	}
+    /**
+     * @param $contractId
+     *
+     * @return ApiResponse
+     */
+    public function selfServiceToken($contractId)
+    {
+        return $this->get($contractId, 'SelfServiceToken');
+    }
 }
