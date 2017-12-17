@@ -20,7 +20,7 @@ class LaravelBillwerkServiceProvider extends ServiceProvider
 		$this->publishes([
 			__DIR__.'/resources/config/laravel-billwerk.php' => config_path('laravel-billwerk.php'),
 			__DIR__.'/resources/views' => resource_path('views/vendor/ld-billwerk'),
-			__DIR__.'/resources/assets' => resources_path('assets/vendor/laravel-billwerk'),
+			__DIR__.'/resources/assets' => resource_path('assets/vendor/laravel-billwerk'),
 		]);
 	}
 
