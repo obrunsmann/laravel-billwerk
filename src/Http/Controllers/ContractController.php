@@ -20,7 +20,7 @@ class ContractController extends Controller
 	 */
 	private function getCustomer(): Customer
 	{
-		return \Auth::user()->merchant->getCustomer();
+		return \Auth::user()->getBillable()->getCustomer();
 	}
 
 	public function show($contractId)
