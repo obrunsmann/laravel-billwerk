@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 /**
  * Class CreateCustomersTable
  */
-class CreateCustomersTable extends Migration
+class LdBwCreateCustomersTable extends Migration
 {
 	/**
 	 * Run the migrations.
