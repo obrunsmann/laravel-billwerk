@@ -19,14 +19,14 @@ class RecurringBillingApproaching
 {
 	use Dispatchable, InteractsWithSockets, SerializesModels;
 
-	private $contract;
+	public $contract;
 
 	/**
 	 * Create a new event instance.
 	 *
-	 * @param \Lefamed\LaravelBillwerk\Models\Contract $contract
+	 * @param $contract
 	 */
-	public function __construct(Contract $contract)
+	public function __construct($contract)
 	{
 		$this->contract = $contract;
 	}

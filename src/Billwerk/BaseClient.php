@@ -138,11 +138,12 @@ abstract class BaseClient
 	/**
 	 * @param $id
 	 * @param $payload
-	 * @return ApiResponse
+	 * @param null $action
+	 * @return \Lefamed\LaravelBillwerk\Billwerk\ApiResponse
 	 */
-	public function put($id, $payload)
+	public function put($id, $payload, $action = null)
 	{
-		$route = $this->baseUrl.$this->resource.'/'.$id;
+		$route = $this->baseUrl.$this->resource.'/'.$id.($action !== null ? '/'.$action : '');
 		$options = $this->buildOptions();
 
 		$options['json'] = $payload;
