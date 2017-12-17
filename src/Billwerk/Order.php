@@ -4,6 +4,7 @@ namespace Lefamed\LaravelBillwerk\Billwerk;
 
 /**
  * Class Order
+ *
  * @package Lefamed\LaravelBillwerk\Billwerk
  */
 class Order extends BaseClient
@@ -16,9 +17,9 @@ class Order extends BaseClient
 			'CustomerId' => $customerId,
 			'Cart' => [
 				'PlanVariantId' => $planVariantId,
-				'CouponCode' => $couponCode
-			]
-		], $this->resource . '/Preview');
+				'CouponCode' => $couponCode,
+			],
+		], $this->resource.'/Preview');
 	}
 
 	/**
@@ -31,8 +32,18 @@ class Order extends BaseClient
 		return $this->post([
 			'CustomerId' => $customerId,
 			'Cart' => [
-				'PlanVariantId' => $planVariantId
-			]
+				'PlanVariantId' => $planVariantId,
+			],
 		]);
+	}
+
+	/**
+	 * @param $orderId
+	 * @param array $payload
+	 * @return \Lefamed\LaravelBillwerk\Billwerk\ApiResponse
+	 */
+	public function commit($orderId, $payload = [])
+	{
+		return $this->post($payload, null, $orderId.'/Commit/');
 	}
 }

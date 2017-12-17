@@ -24,6 +24,7 @@ abstract class BaseClient
 	 * @var string
 	 */
 	protected $baseUrl;
+
 	protected $authUrl;
 
 	/**
@@ -65,8 +66,8 @@ abstract class BaseClient
 			'form_params' => [
 				'grant_type' => 'client_credentials',
 				'client_id' => config('laravel-billwerk.auth.client_id'),
-				'client_secret' => config('laravel-billwerk.auth.client_secret')
-			]
+				'client_secret' => config('laravel-billwerk.auth.client_secret'),
+			],
 		]);
 
 		if ($res->getStatusCode() === 200) {
@@ -76,7 +77,7 @@ abstract class BaseClient
 			$this->accessToken = $body->access_token;
 		} else {
 			\Log::error($res->getBody());
-			throw new \Exception('Billwerk auth error - ' . $res->getStatusCode());
+			throw new \Exception('Billwerk auth error - '.$res->getStatusCode());
 		}
 	}
 
@@ -95,8 +96,8 @@ abstract class BaseClient
 	{
 		return [
 			'headers' => [
-				'Authorization' => 'Bearer ' . $this->accessToken
-			]
+				'Authorization' => 'Bearer '.$this->accessToken,
+			],
 		];
 	}
 
@@ -108,9 +109,9 @@ abstract class BaseClient
 	public function get($id = null, $action = null)
 	{
 		if (null !== $id) {
-			$route = $this->baseUrl . $this->resource . '/' . $id . ($action !== null ? '/' . $action : '');
+			$route = $this->baseUrl.$this->resource.'/'.$id.($action !== null ? '/'.$action : '');
 		} else {
-			$route = $this->baseUrl . $this->resource;
+			$route = $this->baseUrl.$this->resource;
 		}
 
 		/** @noinspection PhpParamsInspection */
@@ -120,18 +121,18 @@ abstract class BaseClient
 	/**
 	 * @param $payload
 	 * @param null $resource
-	 * @return ApiResponse
+	 * @param null $action
+	 * @return \Lefamed\LaravelBillwerk\Billwerk\ApiResponse
 	 */
-	public function post($payload, $resource = null)
+	public function post($payload, $resource = null, $action = null)
 	{
-		$route = $this->baseUrl . ($resource ?? $this->resource);
+		$route = $this->baseUrl.($resource ?? $this->resource).($action !== null ? '/'.$action : '');
 		$options = $this->buildOptions();
 
 		$options['json'] = $payload;
 
 		/** @noinspection PhpParamsInspection */
 		return new ApiResponse($this->httpClient->post($route, $options));
-
 	}
 
 	/**
@@ -141,7 +142,7 @@ abstract class BaseClient
 	 */
 	public function put($id, $payload)
 	{
-		$route = $this->baseUrl . $this->resource . '/' . $id;
+		$route = $this->baseUrl.$this->resource.'/'.$id;
 		$options = $this->buildOptions();
 
 		$options['json'] = $payload;
@@ -156,7 +157,7 @@ abstract class BaseClient
 	 */
 	public function delete($id)
 	{
-		$route = $this->baseUrl . $this->resource . '/' . $id;
+		$route = $this->baseUrl.$this->resource.'/'.$id;
 		$options = $this->buildOptions();
 
 		/** @noinspection PhpParamsInspection */
