@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateCustomersTable
+ * Class LdCreateCustomersTable
  */
-class CreateCustomersTable extends Migration
+class LdCreateCustomersTable extends Migration
 {
 	/**
 	 * Run the migrations.
