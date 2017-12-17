@@ -4,6 +4,7 @@ namespace Lefamed\LaravelBillwerk\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Lefamed\LaravelBillwerk\Events\RecurringBillingApproaching;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCancelled;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractChanged;
 use Lefamed\LaravelBillwerk\Jobs\Webhooks\ContractCreated;
@@ -43,6 +44,9 @@ class WebhookController extends Controller
 				break;
 			case 'OrderSucceeded':
 				dispatch(new OrderSucceeded($content->ContractId, $content->OrderId));
+				break;
+			case 'RecurringBillingApproaching':
+				event(new RecurringBillingApproaching($content->ContractId));
 				break;
 		}
 
