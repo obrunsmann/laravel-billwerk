@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
 use Lefamed\LaravelBillwerk\Billwerk\Contract;
+use Lefamed\LaravelBillwerk\Events\UpOrDowngrade;
 use Lefamed\LaravelBillwerk\Models\Customer;
 
 class ContractChanged implements ShouldQueue
@@ -21,6 +22,7 @@ class ContractChanged implements ShouldQueue
 
 	/**
 	 * Create a new job instance.
+	 *
 	 * @param string $contractId
 	 */
 	public function __construct(string $contractId)
@@ -42,14 +44,15 @@ class ContractChanged implements ShouldQueue
 			$res = $contractClient->get($this->contractId)->data();
 
 			//check if contract already exists
-			if (!$contract = \Lefamed\LaravelBillwerk\Models\Contract::find($res->Id)) {
+			if (! $contract = \Lefamed\LaravelBillwerk\Models\Contract::find($res->Id)) {
 				return;
 			}
 
 			//find corresponding customer
 			$customer = Customer::where('billwerk_id', $res->CustomerId)->first();
-			if (!$customer) {
-				Log::info('Customer ' . $res->CustomerId . ' for contract ' . $res->Id . ' not found. Cannot apply contract.');
+			if (! $customer) {
+				Log::info('Customer '.$res->CustomerId.' for contract '.$res->Id.' not found. Cannot apply contract.');
+
 				return;
 			}
 
@@ -59,8 +62,10 @@ class ContractChanged implements ShouldQueue
 				$contract->delete();
 			} else {
 				// check if plan has changed
-				if($contract->plan_id !== $res->PlanId) {
+				if ($contract->plan_id !== $res->PlanId) {
 					$contract->plan_id = $res->PlanId;
+
+					event(new UpOrDowngrade($contract));
 				}
 			}
 
