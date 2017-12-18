@@ -57,7 +57,14 @@ class ContractChanged implements ShouldQueue
 			if (isset($res->EndDate) && Carbon::parse($res->EndDate)->isPast()) {
 				// contract has ended, remove it
 				$contract->delete();
+			} else {
+				// check if plan has changed
+				if($contract->plan_id !== $res->PlanId) {
+					$contract->plan_id = $res->PlanId;
+				}
 			}
+
+			$contract->save();
 		} catch (\Exception $e) {
 			Bugsnag::notifyException($e);
 			Log::error($e->getMessage());
