@@ -64,12 +64,11 @@ class ContractChanged implements ShouldQueue
 				// check if plan has changed
 				if ($contract->plan_id !== $res->PlanId) {
 					$contract->plan_id = $res->PlanId;
+					$contract->save();
 
 					event(new UpOrDowngrade($contract));
 				}
 			}
-
-			$contract->save();
 		} catch (\Exception $e) {
 			Bugsnag::notifyException($e);
 			Log::error($e->getMessage());
