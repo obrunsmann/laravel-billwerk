@@ -22,7 +22,7 @@ class CustomerTransformer extends TransformerAbstract
 		return [
 			'customer_name' => $customer->CustomerName,
 			'customer_sub_name' => $customer->CustomerSubName,
-			'company_name' => $customer->CompanyName,
+			'company_name' => $customer->CompanyName ?? '',
 			'first_name' => $customer->FirstName ?? '',
 			'last_name' => $customer->LastName ?? '',
 			'language' => $customer->Language,
