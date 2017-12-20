@@ -3,29 +3,31 @@
 namespace Lefamed\LaravelBillwerk\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Lefamed\LaravelBillwerk\Models\Contract;
 
 /**
  * Class ContractCancelled
+ *
  * @package Lefamed\LaravelBillwerk\Events
  */
 class ContractCancelled
 {
-	use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
-	private $contract;
+    public $contract;
 
-	/**
-	 * Create a new event instance.
-	 */
-	public function __construct(Contract $contract)
-	{
-		$this->contract = $contract;
-	}
+    /**
+     * Create a new event instance.
+     *
+     * @param Contract $contract
+     */
+    public function __construct(Contract $contract)
+    {
+        $this->contract = $contract;
+    }
 }

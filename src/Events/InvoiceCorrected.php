@@ -6,30 +6,32 @@
  * Time: 13:40
  */
 
-namespace Lefamed\LaravelBillwerk\Jobs\Webhooks;
+namespace Lefamed\LaravelBillwerk\Events;
 
-
-class InvoiceCorrected implements ShouldQueue
+/**
+ * Class InvoiceCorrected
+ *
+ * @package Lefamed\LaravelBillwerk\Events
+ */
+class InvoiceCorrected
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new job instance.
+     * @var string
+     */
+    public $oldInvoiceDraftId;
+
+    /**
+     * @var string
+     */
+    public $newInvoiceDraftId;
+
+    /**
+     * Create a new event instance.
      *
-     * @var string
-     */
-    private $oldInvoiceDraftId;
-
-    /**
-     * @var string
-     */
-    private $newInvoiceDraftId;
-
-    /**
      * @param string $oldInvoiceDraftId
      * @param string $newInvoiceDraftId
-     *
-     * @internal param string $invoiceId
      */
     public function __construct(string $oldInvoiceDraftId, string $newInvoiceDraftId)
     {

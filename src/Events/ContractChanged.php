@@ -8,13 +8,14 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Lefamed\LaravelBillwerk\Models\Contract;
 
 /**
- * Class RecurringBillingApproaching
+ * Class ContractChanged
  *
  * @package Lefamed\LaravelBillwerk\Events
  */
-class RecurringBillingApproaching
+class ContractChanged
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -23,9 +24,9 @@ class RecurringBillingApproaching
     /**
      * Create a new event instance.
      *
-     * @param $contract
+     * @param Contract $contract
      */
-    public function __construct($contract)
+    public function __construct(Contract $contract)
     {
         $this->contract = $contract;
     }
