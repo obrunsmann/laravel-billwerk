@@ -73,6 +73,10 @@ class Customer extends Model
 	{
 		// -- On Create Event -- //
 		static::creating(function ($values) {
+			if(env('BILLWERK_SYNC_DISABLED', false) === true) {
+				return;
+			}
+
 			$customerClient = new \Lefamed\LaravelBillwerk\Billwerk\Customer();
 			$data = fractal($values)
 				->transformWith(new CustomerTransformer())
@@ -83,6 +87,10 @@ class Customer extends Model
 
 		// -- On Update Event -- //
 		static::updated(function (Customer $customer) {
+			if(env('BILLWERK_SYNC_DISABLED', false) === true) {
+				return;
+			}
+
 			dispatch(new SyncBillwerkCustomer($customer));
 		});
 	}
