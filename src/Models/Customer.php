@@ -74,6 +74,8 @@ class Customer extends Model
 		// -- On Create Event -- //
 		static::creating(function ($values) {
 			if(env('BILLWERK_SYNC_DISABLED', false) === true) {
+				$values['billwerk_id'] = str_random(24);
+
 				return;
 			}
 
