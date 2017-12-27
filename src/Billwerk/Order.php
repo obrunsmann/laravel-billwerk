@@ -38,6 +38,23 @@ class Order extends BaseClient
 	}
 
 	/**
+	 * @param $contractId
+	 * @param $planVariantId
+	 * @return \Lefamed\LaravelBillwerk\Billwerk\ApiResponse
+	 */
+	public function upgrade($contractId, $planVariantId)
+	{
+		return $this->post([
+			'ContractId' => $contractId,
+			'TriggerInterimBilling' => true,
+			'Cart' => [
+				'PlanVariantId' => $planVariantId,
+				'InheritStartDate' => true,
+			],
+		]);
+	}
+
+	/**
 	 * @param $orderId
 	 * @param array $payload
 	 * @return \Lefamed\LaravelBillwerk\Billwerk\ApiResponse
