@@ -1,19 +1,19 @@
 {
-  "name": "lefamed/laravel-billwerk",
-  "authors": [
-    {
-      "name": "Oliver Brunsmann",
-      "email": "brunsmann@lefamed.de"
+    "name": "lefamed/laravel-billwerk",
+    "authors": [
+        {
+            "name": "Oliver Brunsmann",
+            "email": "brunsmann@lefamed.de"
+        }
+    ],
+	"autoload": {
+		"psr-4": {
+			"Lefamed\\LaravelBillwerk\\": "src"
+		}
+	},
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "spatie/laravel-fractal": "^5.1",
+        "kris/laravel-form-builder": "^1.12"
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Lefamed\\LaravelBillwerk\\": "src"
-    }
-  },
-  "require": {
-    "guzzlehttp/guzzle": "^6.3",
-    "spatie/laravel-fractal": "^5.1",
-    "kris/laravel-form-builder": "^1.12"
-  }
 }

@@ -3,9 +3,10 @@
 namespace Lefamed\LaravelBillwerk\Billwerk;
 
 /**
- * {@inheritDoc}
+ * Class PlanVariant
+ * @package Lefamed\LaravelBillwerk\Billwerk
  */
 class PlanVariant extends BaseClient
 {
-    protected $resource = 'PlanVariants';
+	protected $resource = 'PlanVariants';
 }
