@@ -10,11 +10,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class RecurringBillingApproaching
+ * Class TrialEndApproaching
  *
  * @package Lefamed\LaravelBillwerk\Events
  */
-class RecurringBillingApproaching
+class TrialEndApproaching
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

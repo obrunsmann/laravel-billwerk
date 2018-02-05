@@ -3,15 +3,14 @@
 namespace Lefamed\LaravelBillwerk\Billwerk;
 
 /**
- * Class Customer
- * @package Lefamed\LaravelBillwerk\Billwerk
+ * {@inheritDoc}
  */
 class Customer extends BaseClient
 {
-	protected $resource = 'Customers';
+    protected $resource = 'Customers';
 
-	public function getContracts($customerId)
-	{
-		return $this->get($customerId, 'Contracts');
-	}
+    public function getContracts($customerId)
+    {
+        return $this->get($customerId, 'Contracts');
+    }
 }
