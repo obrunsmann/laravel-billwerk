@@ -19,7 +19,7 @@ class ContractCancelled
 {
 	use Dispatchable, InteractsWithSockets, SerializesModels;
 
-	private $contract;
+	public $contract;
 
 	/**
 	 * Create a new event instance.
