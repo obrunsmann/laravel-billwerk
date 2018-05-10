@@ -10,23 +10,30 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Lefamed\LaravelBillwerk\Models\Contract;
+use Lefamed\LaravelBillwerk\Models\Customer;
 
 /**
- * Class ContractCreated
+ * Class OrderSucceeded
  *
  * @package Lefamed\LaravelBillwerk\Events
  */
-class ContractCreated
+class OrderSucceeded
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+	use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $contract;
+	/**
+	 * @var \Lefamed\LaravelBillwerk\Models\Customer
+	 */
+	public $customer;
 
-    /**
-     * Create a new event instance.
-     */
-    public function __construct(Contract $contract)
-    {
-        $this->contract = $contract;
-    }
+	public $order;
+
+	/**
+	 * Create a new event instance.
+	 */
+	public function __construct(Customer $customer, $order)
+	{
+		$this->customer = $customer;
+		$this->order = $order;
+	}
 }

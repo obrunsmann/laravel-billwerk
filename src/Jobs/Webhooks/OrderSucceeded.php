@@ -29,6 +29,7 @@ class OrderSucceeded implements ShouldQueue
 	 * @var string
 	 */
 	private $contractId;
+
 	/**
 	 * @var string
 	 */
@@ -36,6 +37,7 @@ class OrderSucceeded implements ShouldQueue
 
 	/**
 	 * Create a new job instance.
+	 *
 	 * @param string $contractId
 	 * @param string $orderId
 	 */
@@ -60,9 +62,8 @@ class OrderSucceeded implements ShouldQueue
 
 			//search the customer
 			$customer = Customer::byBillwerkId($order->CustomerId)->first();
-			if ($customer) {
-				$customer->notify(new \Lefamed\LaravelBillwerk\Notifications\OrderSucceeded($order));
-			}
+
+			event(new \Lefamed\LaravelBillwerk\Events\OrderSucceeded($customer, $order));
 		} catch (\Exception $e) {
 			dump($e);
 			Bugsnag::notifyException($e);

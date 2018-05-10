@@ -13,11 +13,9 @@ class LdAddReferenceCodeToContracts extends Migration
      */
     public function up()
     {
-        if (! Schema::hasTable('lefamed_billwerk_contracts')) {
-            Schema::table('lefamed_billwerk_contracts', function (Blueprint $table) {
-                $table->string('reference_code', 9)->unique();
-            });
-        }
+        Schema::table('lefamed_billwerk_contracts', function (Blueprint $table) {
+            $table->string('reference_code', 9)->unique();
+        });
     }
 
     /**
