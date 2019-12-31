@@ -1,0 +1,22 @@
+.payment-methods {
+	font-size: 30px;
+	margin: 0 auto;
+	text-align: center;
+	width: 100%;
+}
+
+.payment-methods label {
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+	border-radius: 3px;
+	padding: 5px 10px;
+	width: 200px;
+}
+
+.payment-methods ul {
+	margin-top: 20px;
+}
+
+.payment-methods ul > li > i {
+	padding: 4px;
+}
